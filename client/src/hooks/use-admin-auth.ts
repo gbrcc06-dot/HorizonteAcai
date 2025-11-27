@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const ADMIN_PASSWORD = "admin123"; // Mude isso em produção
+const ADMIN_PASSWORD = "271123"; // Mude isso em produção
 const ADMIN_TOKEN_KEY = "horizonte_admin_token";
 
 export function useAdminAuth() {
