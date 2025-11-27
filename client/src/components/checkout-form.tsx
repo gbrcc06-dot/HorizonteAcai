@@ -38,6 +38,7 @@ export function CheckoutForm({ total, onSubmit }: CheckoutFormProps) {
       name: "",
       rua: "",
       numero: "",
+      bairro: "",
       quadra: "",
       complemento: "",
       cep: "",
@@ -137,26 +138,26 @@ export function CheckoutForm({ total, onSubmit }: CheckoutFormProps) {
               )}
             />
 
-            <div className="grid grid-cols-2 gap-3">
-              <FormField
-                control={form.control}
-                name="rua"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white">Rua</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Rua Principal"
-                        {...field}
-                        className="glass-effect border-white/20 bg-white/10 text-white placeholder:text-white/50"
-                        data-testid="input-street"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <FormField
+              control={form.control}
+              name="rua"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-white">Rua</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Rua Principal"
+                      {...field}
+                      className="glass-effect border-white/20 bg-white/10 text-white placeholder:text-white/50"
+                      data-testid="input-street"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
+            <div className="grid grid-cols-2 gap-3">
               <FormField
                 control={form.control}
                 name="numero"
@@ -169,6 +170,25 @@ export function CheckoutForm({ total, onSubmit }: CheckoutFormProps) {
                         {...field}
                         className="glass-effect border-white/20 bg-white/10 text-white placeholder:text-white/50"
                         data-testid="input-number"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="bairro"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Bairro</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Centro"
+                        {...field}
+                        className="glass-effect border-white/20 bg-white/10 text-white placeholder:text-white/50"
+                        data-testid="input-bairro"
                       />
                     </FormControl>
                     <FormMessage />

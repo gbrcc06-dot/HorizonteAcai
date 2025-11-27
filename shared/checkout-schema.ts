@@ -4,6 +4,7 @@ export const checkoutSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
   rua: z.string().min(1, "Rua é obrigatória"),
   numero: z.string().min(1, "Número é obrigatório"),
+  bairro: z.string().min(1, "Bairro é obrigatório"),
   quadra: z.string().optional(),
   complemento: z.string().optional(),
   cep: z.string().min(8, "CEP deve ter no mínimo 8 caracteres"),

@@ -108,35 +108,56 @@ export default function Home() {
   };
 
   const handleCheckout = (checkoutData: any) => {
-    const message = cartItems.map(item => {
+    const itemsList = cartItems.map((item, index) => {
       const toppings = item.selectedToppings && item.selectedToppings.length > 0
-        ? `\nAcompanhamentos: ${item.selectedToppings.join(', ')}`
+        ? `\n  ├─ Acompanhamentos: ${item.selectedToppings.join(', ')}`
         : '';
       
-      return `[x] ${item.quantity}x ${item.productName}${item.size ? ` (${item.size})` : ''}${toppings} - R$ ${(item.price * item.quantity).toFixed(2)}`;
+      return `${index + 1}. ${item.quantity}x ${item.productName}${item.size ? ` (${item.size})` : ''} - R$ ${(item.price * item.quantity).toFixed(2)}${toppings}`;
     }).join('\n\n');
     
     const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const deliveryFee = 5;
     const total = subtotal + deliveryFee;
 
-    const gpsInfo = checkoutData.gpsLink ? `\nLocalização (GPS): ${checkoutData.gpsLink}` : '';
-    const addressInfo = `[PEDIDO] RECEBIDO\n${message}\n\n[ENDERECO] DE ENTREGA\n${checkoutData.name}\n${checkoutData.rua}\n${checkoutData.numero}${checkoutData.quadra ? ` - Quadra ${checkoutData.quadra}` : ''}${checkoutData.complemento ? ` - ${checkoutData.complemento}` : ''}\nCEP: ${checkoutData.cep}${gpsInfo}`;
+    const gpsInfo = checkoutData.gpsLink ? `\n  • Localização: ${checkoutData.gpsLink}` : '';
+    
+    const addressInfo = `
+━━━━━━━━━━━━━━━━━━━━━━━━━
+📦 PEDIDO RECEBIDO
+━━━━━━━━━━━━━━━━━━━━━━━━━
 
-    let paymentInfo = `[PAGAMENTO] FORMA: ${
+${itemsList}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━
+📍 ENDEREÇO DE ENTREGA
+━━━━━━━━━━━━━━━━━━━━━━━━━
+  • Cliente: ${checkoutData.name}
+  • Rua: ${checkoutData.rua}
+  • Número: ${checkoutData.numero}
+  • Bairro: ${checkoutData.bairro}${checkoutData.quadra ? `\n  • Quadra: ${checkoutData.quadra}` : ''}${checkoutData.complemento ? `\n  • Complemento: ${checkoutData.complemento}` : ''}
+  • CEP: ${checkoutData.cep}${gpsInfo}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━
+💳 PAGAMENTO
+━━━━━━━━━━━━━━━━━━━━━━━━━
+  • Forma: ${
       checkoutData.paymentMethod === 'pix' ? 'PIX' :
-      checkoutData.paymentMethod === 'cartao' ? 'CARTAO' :
+      checkoutData.paymentMethod === 'cartao' ? 'CARTÃO' :
       'DINHEIRO'
-    }`;
+    }${checkoutData.paymentMethod === 'dinheiro' && checkoutData.needsChange ? `\n  • Será pago: R$ ${checkoutData.changeAmount.toFixed(2)}\n  • Troco: R$ ${(checkoutData.changeAmount - total).toFixed(2)}` : ''}
 
-    if (checkoutData.paymentMethod === 'dinheiro' && checkoutData.needsChange) {
-      const changeValue = checkoutData.changeAmount - total;
-      paymentInfo += `\nSera pago: R$ ${checkoutData.changeAmount.toFixed(2)}\nTroco: R$ ${changeValue.toFixed(2)}`;
-    }
+━━━━━━━━━━━━━━━━━━━━━━━━━
+💰 RESUMO
+━━━━━━━━━━━━━━━━━━━━━━━━━
+  • Subtotal: R$ ${subtotal.toFixed(2)}
+  • Taxa de entrega: R$ ${deliveryFee.toFixed(2)}
+  
+  ✅ TOTAL: R$ ${total.toFixed(2)}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━`;
     
-    const fullMessage = `${addressInfo}\n\n${paymentInfo}\n\nSubtotal: R$ ${subtotal.toFixed(2)}\nTaxa de entrega: R$ ${deliveryFee.toFixed(2)}\n\n===TOTAL: R$ ${total.toFixed(2)}===`;
-    
-    const whatsappUrl = `https://wa.me/5565981041149?text=${encodeURIComponent(fullMessage)}`;
+    const whatsappUrl = `https://wa.me/5565981041149?text=${encodeURIComponent(addressInfo)}`;
     window.open(whatsappUrl, '_blank');
   };
 
