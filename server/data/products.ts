@@ -11,6 +11,18 @@ export const categories: Category[] = [
   { id: "barca", name: "BARCA / DISCO", order: 7 },
 ];
 
+// Complementos de Açaí (copos, potes, isopor, barca)
+const ACAI_FREE = ["Leite condensado", "Leite em pó", "Granola", "Banana", "Morango"];
+const ACAI_PAID = ["Nutella", "Paçoca", "Amendoim", "Kiwi", "Manga", "Uva", "Abacaxi", "Coco ralado", "Chocolate granulado", "Confete", "M&M's", "Bis", "Oreo", "Prestígio", "Bombom", "Brownie", "Marshmallow", "Chantilly"];
+
+// Complementos de Sorvete
+const ICECREAM_FREE = ["Calda de chocolate", "Calda de morango", "Granola", "Banana", "Morango"];
+const ICECREAM_PAID = ["Nutella", "Pasta de amendoim", "Amendoim ralado", "Calda de caramelo", "Calda de café", "Coco ralado", "Chocolate granulado", "Confete", "M&M's", "Brownie picado", "Biscoito triturado"];
+
+// Complementos de Milk-Shake
+const SHAKE_FREE = ["Leite em pó", "Banana", "Morango", "Calda de chocolate", "Granola"];
+const SHAKE_PAID = ["Nutella", "Pasta de amendoim", "Calda de caramelo", "Coco ralado", "Chocolate granulado", "M&M's", "Biscoito triturado", "Brownie picado"];
+
 export const products: Product[] = [
   {
     id: "promo-1",
@@ -21,7 +33,7 @@ export const products: Product[] = [
     isPromotion: true,
     isFeatured: true,
     sizes: [],
-    toppings: [],
+    toppings: [...ICECREAM_FREE, ...ICECREAM_PAID],
   },
   {
     id: "promo-2",
@@ -31,7 +43,7 @@ export const products: Product[] = [
     basePrice: 23.0,
     isPromotion: true,
     sizes: [],
-    toppings: [],
+    toppings: [...SHAKE_FREE, ...SHAKE_PAID],
   },
   {
     id: "promo-3",
@@ -41,7 +53,7 @@ export const products: Product[] = [
     basePrice: 55.0,
     isPromotion: true,
     sizes: [],
-    toppings: [],
+    toppings: [...ACAI_FREE, ...ACAI_PAID],
   },
   {
     id: "promo-4",
@@ -51,7 +63,7 @@ export const products: Product[] = [
     basePrice: 70.0,
     isPromotion: true,
     sizes: [],
-    toppings: [],
+    toppings: [...ACAI_FREE, ...ACAI_PAID],
   },
   {
     id: "promo-5",
@@ -61,7 +73,7 @@ export const products: Product[] = [
     basePrice: 56.0,
     isPromotion: true,
     sizes: [],
-    toppings: [],
+    toppings: [...ACAI_FREE, ...ACAI_PAID],
   },
   {
     id: "promo-6",
@@ -71,7 +83,7 @@ export const products: Product[] = [
     basePrice: 46.0,
     isPromotion: true,
     sizes: [],
-    toppings: [],
+    toppings: [...ACAI_FREE, ...ACAI_PAID],
   },
   {
     id: "copo-1",
@@ -80,7 +92,7 @@ export const products: Product[] = [
     categoryId: "copos",
     basePrice: 11.0,
     sizes: ["200ml"],
-    toppings: [],
+    toppings: [...ACAI_FREE, ...ACAI_PAID],
   },
   {
     id: "copo-2",
@@ -89,7 +101,7 @@ export const products: Product[] = [
     categoryId: "copos",
     basePrice: 14.0,
     sizes: ["300ml"],
-    toppings: [],
+    toppings: [...ACAI_FREE, ...ACAI_PAID],
   },
   {
     id: "copo-3",
@@ -98,7 +110,7 @@ export const products: Product[] = [
     categoryId: "copos",
     basePrice: 17.0,
     sizes: ["400ml"],
-    toppings: [],
+    toppings: [...ACAI_FREE, ...ACAI_PAID],
   },
   {
     id: "copo-4",
@@ -107,7 +119,7 @@ export const products: Product[] = [
     categoryId: "copos",
     basePrice: 20.0,
     sizes: ["500ml"],
-    toppings: [],
+    toppings: [...ACAI_FREE, ...ACAI_PAID],
   },
   {
     id: "copo-5",
@@ -116,7 +128,7 @@ export const products: Product[] = [
     categoryId: "copos",
     basePrice: 25.0,
     sizes: ["700ml"],
-    toppings: [],
+    toppings: [...ACAI_FREE, ...ACAI_PAID],
   },
   {
     id: "pote-1",
@@ -125,7 +137,7 @@ export const products: Product[] = [
     categoryId: "potes",
     basePrice: 35.0,
     sizes: [],
-    toppings: [],
+    toppings: [...ACAI_FREE, ...ACAI_PAID],
   },
   {
     id: "pote-2",
@@ -134,7 +146,7 @@ export const products: Product[] = [
     categoryId: "potes",
     basePrice: 45.0,
     sizes: [],
-    toppings: [],
+    toppings: [...ACAI_FREE, ...ACAI_PAID],
   },
   {
     id: "isopor-1",
@@ -143,7 +155,7 @@ export const products: Product[] = [
     categoryId: "isopor",
     basePrice: 16.0,
     sizes: [],
-    toppings: [],
+    toppings: [...ACAI_FREE, ...ACAI_PAID],
   },
   {
     id: "isopor-2",
@@ -152,7 +164,7 @@ export const products: Product[] = [
     categoryId: "isopor",
     basePrice: 26.0,
     sizes: [],
-    toppings: [],
+    toppings: [...ACAI_FREE, ...ACAI_PAID],
   },
   {
     id: "isopor-3",
@@ -161,7 +173,7 @@ export const products: Product[] = [
     categoryId: "isopor",
     basePrice: 33.0,
     sizes: [],
-    toppings: [],
+    toppings: [...ACAI_FREE, ...ACAI_PAID],
   },
   {
     id: "shake-1",
@@ -170,7 +182,7 @@ export const products: Product[] = [
     categoryId: "milk-shake",
     basePrice: 12.0,
     sizes: [],
-    toppings: [],
+    toppings: [...SHAKE_FREE, ...SHAKE_PAID],
   },
   {
     id: "shake-2",
@@ -179,7 +191,7 @@ export const products: Product[] = [
     categoryId: "milk-shake",
     basePrice: 15.0,
     sizes: [],
-    toppings: [],
+    toppings: [...SHAKE_FREE, ...SHAKE_PAID],
   },
   {
     id: "shake-3",
@@ -188,7 +200,7 @@ export const products: Product[] = [
     categoryId: "milk-shake",
     basePrice: 17.0,
     sizes: [],
-    toppings: [],
+    toppings: [...SHAKE_FREE, ...SHAKE_PAID],
   },
   {
     id: "sorvete-1",
@@ -197,7 +209,7 @@ export const products: Product[] = [
     categoryId: "sorvete",
     basePrice: 11.0,
     sizes: [],
-    toppings: [],
+    toppings: [...ICECREAM_FREE, ...ICECREAM_PAID],
   },
   {
     id: "sorvete-2",
@@ -207,7 +219,7 @@ export const products: Product[] = [
     basePrice: 19.0,
     isFeatured: true,
     sizes: [],
-    toppings: [],
+    toppings: [...ICECREAM_FREE, ...ICECREAM_PAID],
   },
   {
     id: "sorvete-3",
@@ -216,7 +228,7 @@ export const products: Product[] = [
     categoryId: "sorvete",
     basePrice: 8.0,
     sizes: [],
-    toppings: [],
+    toppings: [...ICECREAM_FREE, ...ICECREAM_PAID],
   },
   {
     id: "sorvete-4",
@@ -225,7 +237,7 @@ export const products: Product[] = [
     categoryId: "sorvete",
     basePrice: 12.0,
     sizes: [],
-    toppings: [],
+    toppings: [...ICECREAM_FREE, ...ICECREAM_PAID],
   },
   {
     id: "trufado-1",
@@ -234,7 +246,7 @@ export const products: Product[] = [
     categoryId: "trufados",
     basePrice: 22.0,
     sizes: [],
-    toppings: [],
+    toppings: [...ACAI_FREE, ...ACAI_PAID],
   },
   {
     id: "trufado-2",
@@ -243,7 +255,7 @@ export const products: Product[] = [
     categoryId: "trufados",
     basePrice: 25.0,
     sizes: [],
-    toppings: [],
+    toppings: [...ACAI_FREE, ...ACAI_PAID],
   },
   {
     id: "trufado-3",
@@ -252,7 +264,7 @@ export const products: Product[] = [
     categoryId: "trufados",
     basePrice: 22.0,
     sizes: [],
-    toppings: [],
+    toppings: [...ACAI_FREE, ...ACAI_PAID],
   },
   {
     id: "trufado-4",
@@ -261,7 +273,7 @@ export const products: Product[] = [
     categoryId: "trufados",
     basePrice: 25.0,
     sizes: [],
-    toppings: [],
+    toppings: [...ACAI_FREE, ...ACAI_PAID],
   },
   {
     id: "trufado-5",
@@ -270,7 +282,7 @@ export const products: Product[] = [
     categoryId: "trufados",
     basePrice: 22.0,
     sizes: [],
-    toppings: [],
+    toppings: [...ACAI_FREE, ...ACAI_PAID],
   },
   {
     id: "trufado-6",
@@ -279,7 +291,7 @@ export const products: Product[] = [
     categoryId: "trufados",
     basePrice: 25.0,
     sizes: [],
-    toppings: [],
+    toppings: [...ACAI_FREE, ...ACAI_PAID],
   },
   {
     id: "barca-1",
@@ -288,7 +300,7 @@ export const products: Product[] = [
     categoryId: "barca",
     basePrice: 25.0,
     sizes: [],
-    toppings: [],
+    toppings: [...ACAI_FREE, ...ACAI_PAID],
   },
   {
     id: "barca-2",
@@ -297,7 +309,7 @@ export const products: Product[] = [
     categoryId: "barca",
     basePrice: 40.0,
     sizes: [],
-    toppings: [],
+    toppings: [...ACAI_FREE, ...ACAI_PAID],
   },
   {
     id: "barca-3",
@@ -306,6 +318,6 @@ export const products: Product[] = [
     categoryId: "barca",
     basePrice: 60.0,
     sizes: [],
-    toppings: [],
+    toppings: [...ACAI_FREE, ...ACAI_PAID],
   },
 ];
