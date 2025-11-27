@@ -135,7 +135,7 @@ export default function Home() {
     
     const fullMessage = `🎉 PEDIDO HORIZONTE - SORVETE E ACAI 🎉\n\n${message}\n\n${addressInfo}\n\n${paymentInfo}\n\n━━━━━━━━━━━━━━━━━━━\n📊 Subtotal: R$ ${subtotal.toFixed(2)}\n🚚 Taxa de entrega: R$ ${deliveryFee.toFixed(2)}\n━━━━━━━━━━━━━━━━━━━\n💲 TOTAL: R$ ${total.toFixed(2)}`;
     
-    const whatsappUrl = `https://wa.me/5565981041149?text=${encodeURIComponent(fullMessage)}`;
+    const whatsappUrl = `https://wa.me/5565981041149?text=${encodeURI(fullMessage)}`;
     window.open(whatsappUrl, '_blank');
   };
 
