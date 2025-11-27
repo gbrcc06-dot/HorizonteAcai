@@ -70,15 +70,15 @@ export function ProductModal({ product, open, onClose, onAddToCart }: ProductMod
   if (!product) return null;
 
   const hasSizes = product.sizes && product.sizes.length > 0;
-  const availableSizes = hasSizes ? DEFAULT_SIZES.filter(s => 
-    product.sizes?.includes(s.value)
-  ) : DEFAULT_SIZES;
+  const availableSizes = hasSizes 
+    ? DEFAULT_SIZES.filter(s => product.sizes?.includes(s.value))
+    : [];
   
   const availableToppings = product.toppings && product.toppings.length > 0 
     ? product.toppings 
     : DEFAULT_TOPPINGS;
   
-  const currentPrice = selectedSize 
+  const currentPrice = hasSizes && selectedSize 
     ? availableSizes.find(s => s.value === selectedSize)?.price || product.basePrice
     : product.basePrice;
   const totalPrice = currentPrice * quantity;

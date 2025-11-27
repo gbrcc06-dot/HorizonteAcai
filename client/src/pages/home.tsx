@@ -120,7 +120,7 @@ export default function Home() {
     const deliveryFee = 5;
     const total = subtotal + deliveryFee;
     
-    const fullMessage = `🍨 *Pedido Horizonte - Sorvete e Açaí* 🍨\n\n${message}\n\n---\nSubtotal: R$ ${subtotal.toFixed(2)}\nTaxa de entrega: R$ ${deliveryFee.toFixed(2)}\n*Total: R$ ${total.toFixed(2)}*`;
+    const fullMessage = `*Pedido Horizonte - Sorvete e Açaí*\n\n${message}\n\n---\nSubtotal: R$ ${subtotal.toFixed(2)}\nTaxa de entrega: R$ ${deliveryFee.toFixed(2)}\n*Total: R$ ${total.toFixed(2)}*`;
     
     const whatsappUrl = `https://wa.me/5500000000000?text=${encodeURIComponent(fullMessage)}`;
     window.open(whatsappUrl, '_blank');
