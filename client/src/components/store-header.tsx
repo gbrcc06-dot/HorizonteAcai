@@ -14,13 +14,13 @@ interface StoreHeaderProps {
 export function StoreHeader({ cartItemCount, searchQuery, onSearchChange, onCartClick }: StoreHeaderProps) {
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 glass-effect">
-      <div className="container mx-auto px-4 py-2">
-        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-3">
+      <div className="container mx-auto px-4 py-1">
+        <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-2">
             <img 
               src={logoUrl} 
               alt="Horizonte - Sorvete e Açaí" 
-              className="h-16 w-auto md:h-20"
+              className="h-40 w-auto md:h-64"
               data-testid="img-logo"
             />
             <div className="flex flex-col hidden md:flex">
@@ -31,7 +31,7 @@ export function StoreHeader({ cartItemCount, searchQuery, onSearchChange, onCart
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <Badge 
               variant="default" 
               className="bg-green-500/90 text-white backdrop-blur-sm text-xs"
@@ -43,7 +43,7 @@ export function StoreHeader({ cartItemCount, searchQuery, onSearchChange, onCart
           </div>
         </div>
 
-        <div className="mt-2 flex items-center gap-3">
+        <div className="mt-1 flex items-center gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60" />
             <Input
