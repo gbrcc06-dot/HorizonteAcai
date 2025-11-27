@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Minus, Plus, X } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import type { Product, ProductSize } from "@shared/schema";
+import type { Product, ProductSize, ToppingGroup } from "@shared/schema";
 
 interface ProductModalProps {
   product: Product | null;
@@ -31,8 +31,7 @@ const DEFAULT_SIZES: ProductSize[] = [
 
 export function ProductModal({ product, open, onClose, onAddToCart }: ProductModalProps) {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [selectedFreeToppings, setSelectedFreeToppings] = useState<string[]>([]);
-  const [selectedPaidToppings, setSelectedPaidToppings] = useState<string[]>([]);
+  const [selectedToppingsByGroup, setSelectedToppingsByGroup] = useState<Record<string, string[]>>({});
   const [quantity, setQuantity] = useState(1);
 
   const formatPrice = (price: number) => {
@@ -48,26 +47,38 @@ export function ProductModal({ product, open, onClose, onAddToCart }: ProductMod
   const availableSizes = hasSizes 
     ? DEFAULT_SIZES.filter(s => product.sizes?.includes(s.value))
     : [];
-  
-  // Dividir toppings do produto em grátis (primeiros 5) e pagos (resto)
-  const productToppings = product.toppings || [];
-  const freeToppings = productToppings.slice(0, 5);
-  const paidToppings = productToppings.slice(5);
-  
+
+  // Parsear grupos de complementos
+  let toppingGroups: ToppingGroup[] = [];
+  if (product.toppingGroups) {
+    try {
+      toppingGroups = JSON.parse(product.toppingGroups);
+    } catch (e) {
+      toppingGroups = [];
+    }
+  }
+
   const currentPrice = hasSizes && selectedSize 
     ? availableSizes.find(s => s.value === selectedSize)?.price || product.basePrice
     : product.basePrice;
-  
-  // Calcular custo adicional de complementos
-  const extraFreeToppings = Math.max(0, selectedFreeToppings.length - 5);
-  const extraFreeToppingsCost = extraFreeToppings * 2;
-  const selectedPaidCost = selectedPaidToppings.length * 2;
-  const toppingsCost = extraFreeToppingsCost + selectedPaidCost;
-  
+
+  // Calcular custo adicional dos complementos pagos
+  let toppingsCost = 0;
+  Object.values(selectedToppingsByGroup).forEach(selectedItems => {
+    selectedItems.forEach(itemName => {
+      toppingGroups.forEach(group => {
+        const item = group.items.find(i => i.name === itemName);
+        if (item && item.price) {
+          toppingsCost += item.price;
+        }
+      });
+    });
+  });
+
   const totalPrice = (currentPrice + toppingsCost) * quantity;
 
   const handleAddToCart = () => {
-    const allToppings = [...selectedFreeToppings, ...selectedPaidToppings];
+    const allToppings = Object.values(selectedToppingsByGroup).flat();
     const finalPrice = currentPrice + toppingsCost;
     onAddToCart(product, selectedSize, allToppings, quantity, finalPrice);
     handleClose();
@@ -75,26 +86,30 @@ export function ProductModal({ product, open, onClose, onAddToCart }: ProductMod
 
   const handleClose = () => {
     setSelectedSize(null);
-    setSelectedFreeToppings([]);
-    setSelectedPaidToppings([]);
+    setSelectedToppingsByGroup({});
     setQuantity(1);
     onClose();
   };
 
-  const toggleFreeTopping = (topping: string) => {
-    setSelectedFreeToppings(prev =>
-      prev.includes(topping)
-        ? prev.filter(t => t !== topping)
-        : [...prev, topping]
-    );
-  };
+  const toggleTopping = (groupId: string, toppingName: string) => {
+    setSelectedToppingsByGroup(prev => {
+      const groupToppings = prev[groupId] || [];
+      const group = toppingGroups.find(g => g.id === groupId);
+      const maxSelections = group?.maxSelections || 1;
 
-  const togglePaidTopping = (topping: string) => {
-    setSelectedPaidToppings(prev =>
-      prev.includes(topping)
-        ? prev.filter(t => t !== topping)
-        : [...prev, topping]
-    );
+      if (groupToppings.includes(toppingName)) {
+        return {
+          ...prev,
+          [groupId]: groupToppings.filter(t => t !== toppingName),
+        };
+      } else if (groupToppings.length < maxSelections) {
+        return {
+          ...prev,
+          [groupId]: [...groupToppings, toppingName],
+        };
+      }
+      return prev;
+    });
   };
 
   return (
@@ -134,93 +149,73 @@ export function ProductModal({ product, open, onClose, onAddToCart }: ProductMod
             </div>
           )}
 
-          {(freeToppings.length > 0 || paidToppings.length > 0) && (
-            <div className="border-t border-white/10 pt-4">
-              <h3 className="mb-4 font-bold text-xl">Personalize seu pedido</h3>
+          {toppingGroups.length > 0 && (
+            <div className="border-t border-white/10 pt-4 space-y-4">
+              <h3 className="font-bold text-xl">Personalize seu pedido</h3>
               
-              {freeToppings.length > 0 && (
-                <div className="mb-6 p-4 rounded-lg bg-green-500/10 border border-green-500/30">
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-semibold text-lg text-green-400">✓ Até 5 GRÁTIS</h4>
-                    <p className="text-sm text-white/70">+ de 5: R$ 2,00 cada</p>
-                  </div>
-                  {selectedFreeToppings.length > 5 && (
-                    <div className="mb-3 p-2 rounded bg-accent/20 border border-accent/50">
-                      <p className="text-sm text-accent font-medium">
-                        +{extraFreeToppings} item(s) adicionais = R$ {extraFreeToppingsCost.toFixed(2)}
-                      </p>
+              {toppingGroups.map((group) => (
+                <div key={group.id} className="p-4 rounded-lg bg-white/5 border border-white/10">
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <h4 className="font-semibold text-lg text-white">{group.title}</h4>
+                      <p className="text-xs text-white/60">{group.description}</p>
                     </div>
-                  )}
-                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                    {freeToppings.map((topping) => (
-                      <div
-                        key={topping}
-                        className={`flex items-center space-x-2 rounded-md p-3 cursor-pointer border-2 transition-all ${
-                          selectedFreeToppings.includes(topping)
-                            ? 'border-green-400 bg-green-500/20'
-                            : 'border-green-500/30 bg-green-500/5 hover:bg-green-500/10'
-                        }`}
-                        onClick={() => toggleFreeTopping(topping)}
-                        data-testid={`checkbox-topping-free-${topping.toLowerCase().replace(/\s+/g, '-')}`}
-                      >
-                        <Checkbox
-                          id={topping}
-                          checked={selectedFreeToppings.includes(topping)}
-                          onCheckedChange={() => toggleFreeTopping(topping)}
-                        />
-                        <Label
-                          htmlFor={topping}
-                          className="cursor-pointer text-sm font-medium text-white leading-tight"
-                        >
-                          {topping}
-                        </Label>
-                      </div>
-                    ))}
+                    <Badge className="bg-white/10 text-white">
+                      {(selectedToppingsByGroup[group.id] || []).length}/{group.maxSelections}
+                    </Badge>
                   </div>
-                </div>
-              )}
 
-              {paidToppings.length > 0 && (
-                <div className="p-4 rounded-lg bg-purple-500/10 border border-purple-500/30">
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-semibold text-lg text-purple-300">✨ Acompanhamentos PREMIUM</h4>
-                    <p className="text-sm text-white/70 font-bold">R$ 2,00 cada</p>
-                  </div>
-                  {selectedPaidToppings.length > 0 && (
-                    <div className="mb-3 p-2 rounded bg-accent/20 border border-accent/50">
-                      <p className="text-sm text-accent font-medium">
-                        {selectedPaidToppings.length} item(s) = R$ {selectedPaidCost.toFixed(2)}
-                      </p>
+                  {group.required && (selectedToppingsByGroup[group.id] || []).length === 0 && (
+                    <div className="mb-3 p-2 rounded bg-red-500/20 border border-red-500/50">
+                      <p className="text-xs text-red-300">Obrigatório selecionar pelo menos 1 item</p>
                     </div>
                   )}
-                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                    {paidToppings.map((topping) => (
-                      <div
-                        key={topping}
-                        className={`flex items-center space-x-2 rounded-md p-3 cursor-pointer border-2 transition-all ${
-                          selectedPaidToppings.includes(topping)
-                            ? 'border-purple-300 bg-purple-500/20'
-                            : 'border-purple-500/30 bg-purple-500/5 hover:bg-purple-500/10'
-                        }`}
-                        onClick={() => togglePaidTopping(topping)}
-                        data-testid={`checkbox-topping-paid-${topping.toLowerCase().replace(/\s+/g, '-')}`}
-                      >
-                        <Checkbox
-                          id={`paid-${topping}`}
-                          checked={selectedPaidToppings.includes(topping)}
-                          onCheckedChange={() => togglePaidTopping(topping)}
-                        />
-                        <Label
-                          htmlFor={`paid-${topping}`}
-                          className="cursor-pointer text-sm font-medium text-white leading-tight"
+
+                  <div className="space-y-2">
+                    {group.items.map((item) => {
+                      const isSelected = (selectedToppingsByGroup[group.id] || []).includes(item.name);
+                      const isDisabled = 
+                        !isSelected && 
+                        (selectedToppingsByGroup[group.id] || []).length >= group.maxSelections;
+
+                      return (
+                        <div
+                          key={item.name}
+                          className={`flex items-center justify-between rounded-md p-3 cursor-pointer border-2 transition-all ${
+                            isSelected
+                              ? 'border-accent bg-accent/20'
+                              : isDisabled
+                              ? 'border-white/10 bg-white/5 opacity-50 cursor-not-allowed'
+                              : 'border-white/20 bg-white/5 hover:bg-white/10'
+                          }`}
+                          onClick={() => !isDisabled && toggleTopping(group.id, item.name)}
+                          data-testid={`checkbox-topping-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
                         >
-                          {topping}
-                        </Label>
-                      </div>
-                    ))}
+                          <div className="flex items-center space-x-2 flex-1">
+                            <Checkbox
+                              id={`${group.id}-${item.name}`}
+                              checked={isSelected}
+                              onCheckedChange={() => !isDisabled && toggleTopping(group.id, item.name)}
+                              disabled={isDisabled}
+                            />
+                            <Label
+                              htmlFor={`${group.id}-${item.name}`}
+                              className="cursor-pointer text-sm font-medium text-white leading-tight flex-1"
+                            >
+                              {item.name}
+                            </Label>
+                          </div>
+                          {item.price && (
+                            <span className="text-sm text-accent font-semibold ml-2">
+                              +{formatPrice(item.price)}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
-              )}
+              ))}
             </div>
           )}
 

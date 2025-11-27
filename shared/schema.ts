@@ -20,6 +20,7 @@ export const products = pgTable("products", {
   isFeatured: boolean("is_featured").default(false),
   sizes: text("sizes").array(),
   toppings: text("toppings").array(),
+  toppingGroups: text("topping_groups"), // JSON string
 });
 
 export const cartItems = pgTable("cart_items", {
@@ -57,6 +58,20 @@ export interface ProductSize {
   label: string;
   value: string;
   price: number;
+}
+
+export interface ToppingItem {
+  name: string;
+  price?: number;
+}
+
+export interface ToppingGroup {
+  id: string;
+  title: string;
+  description: string;
+  maxSelections: number;
+  required: boolean;
+  items: ToppingItem[];
 }
 
 export interface ProductWithDetails extends Product {
