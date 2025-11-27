@@ -20,9 +20,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
-import { Trash2, Edit2 } from "lucide-react";
+import { Trash2, Edit2, Plus, Home } from "lucide-react";
 import { useState } from "react";
+import { Link } from "wouter";
 import type { Category, Product } from "@/shared/schema";
 
 const productSchema = z.object({
@@ -42,6 +49,7 @@ type ProductFormData = z.infer<typeof productSchema>;
 
 export default function Admin() {
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState("promocao");
 
   const { data: categories = [] } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
@@ -56,7 +64,7 @@ export default function Admin() {
     defaultValues: {
       name: "",
       description: "",
-      categoryId: "",
+      categoryId: "promocao",
       basePrice: 0,
       image: "",
       isPromotion: false,
@@ -72,13 +80,13 @@ export default function Admin() {
       return apiRequest("POST", "/api/admin/products", {
         ...data,
         basePrice: parseFloat(data.basePrice.toString()),
-        sizes: data.sizes ? data.sizes.split(",").map(s => s.trim()) : undefined,
-        toppings: data.toppings ? data.toppings.split(",").map(t => t.trim()) : undefined,
+        sizes: data.sizes ? data.sizes.split(",").map(s => s.trim()).filter(s => s) : undefined,
+        toppings: data.toppings ? data.toppings.split(",").map(t => t.trim()).filter(t => t) : undefined,
       });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
-      form.reset();
+      form.reset({ categoryId: activeCategory });
       setEditingId(null);
     },
   });
@@ -89,13 +97,13 @@ export default function Admin() {
       return apiRequest("PUT", `/api/admin/products/${editingId}`, {
         ...data,
         basePrice: parseFloat(data.basePrice.toString()),
-        sizes: data.sizes ? data.sizes.split(",").map(s => s.trim()) : undefined,
-        toppings: data.toppings ? data.toppings.split(",").map(t => t.trim()) : undefined,
+        sizes: data.sizes ? data.sizes.split(",").map(s => s.trim()).filter(s => s) : undefined,
+        toppings: data.toppings ? data.toppings.split(",").map(t => t.trim()).filter(t => t) : undefined,
       });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
-      form.reset();
+      form.reset({ categoryId: activeCategory });
       setEditingId(null);
     },
   });
@@ -109,10 +117,7 @@ export default function Admin() {
     },
   });
 
-  const groupedProducts = categories.reduce((acc, cat) => {
-    acc[cat.id] = products.filter(p => p.categoryId === cat.id);
-    return acc;
-  }, {} as Record<string, Product[]>);
+  const categoryProducts = products.filter(p => p.categoryId === activeCategory);
 
   const handleEdit = (product: Product) => {
     setEditingId(product.id);
@@ -139,33 +144,42 @@ export default function Admin() {
   };
 
   return (
-    <div className="min-h-screen gradient-bg p-6">
-      <div className="container mx-auto max-w-7xl">
-        <h1 className="text-4xl font-bold text-white mb-8">Painel Administrativo</h1>
+    <div className="min-h-screen gradient-bg p-4">
+      <div className="container mx-auto max-w-6xl">
+        {/* Header com botão voltar */}
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold text-white">Painel Admin</h1>
+          <Link href="/">
+            <Button className="bg-white text-black hover:bg-white/90">
+              <Home className="w-4 h-4 mr-2" />
+              Voltar à Loja
+            </Button>
+          </Link>
+        </div>
 
-        {/* Formulário de Produtos */}
+        {/* Formulário Rápido */}
         <Card className="bg-white/10 border-white/20 backdrop-blur-md p-6 mb-8">
-          <h2 className="text-2xl font-bold text-white mb-6">
-            {editingId ? "Editar Produto" : "Adicionar Novo Produto"}
+          <h2 className="text-xl font-bold text-white mb-4">
+            {editingId ? "✏️ Editar Produto" : "➕ Novo Produto"}
           </h2>
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                 <FormField
                   control={form.control}
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-white">Nome do Produto</FormLabel>
+                      <FormLabel className="text-white text-sm">Nome</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Ex: Açaí 500ml"
+                          placeholder="Nome"
                           {...field}
-                          className="glass-effect border-white/20 bg-white/10 text-white placeholder:text-white/50"
+                          className="glass-effect border-white/20 bg-white/10 text-white placeholder:text-white/50 text-sm"
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-xs" />
                     </FormItem>
                   )}
                 />
@@ -175,11 +189,14 @@ export default function Admin() {
                   name="categoryId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-white">Categoria</FormLabel>
-                      <Select value={field.value} onValueChange={field.onChange}>
+                      <FormLabel className="text-white text-sm">Categoria</FormLabel>
+                      <Select value={field.value} onValueChange={(value) => {
+                        field.onChange(value);
+                        setActiveCategory(value);
+                      }}>
                         <FormControl>
-                          <SelectTrigger className="glass-effect border-white/20 bg-white/10 text-white">
-                            <SelectValue placeholder="Selecione a categoria" />
+                          <SelectTrigger className="glass-effect border-white/20 bg-white/10 text-white text-sm">
+                            <SelectValue />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -190,7 +207,45 @@ export default function Admin() {
                           ))}
                         </SelectContent>
                       </Select>
-                      <FormMessage />
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="basePrice"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white text-sm">Preço R$</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          {...field}
+                          onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                          className="glass-effect border-white/20 bg-white/10 text-white placeholder:text-white/50 text-sm"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="image"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white text-sm">Imagem URL</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="https://..."
+                          {...field}
+                          className="glass-effect border-white/20 bg-white/10 text-white placeholder:text-white/50 text-sm"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
                     </FormItem>
                   )}
                 />
@@ -201,102 +256,64 @@ export default function Admin() {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-white">Descrição</FormLabel>
+                    <FormLabel className="text-white text-sm">Descrição</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Descrição do produto"
                         {...field}
-                        className="glass-effect border-white/20 bg-white/10 text-white placeholder:text-white/50"
+                        className="glass-effect border-white/20 bg-white/10 text-white placeholder:text-white/50 text-sm"
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-xs" />
                   </FormItem>
                 )}
               />
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="basePrice"
+                  name="toppings"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-white">Preço (R$)</FormLabel>
+                      <FormLabel className="text-white text-sm">Complementos (separados por vírgula)</FormLabel>
                       <FormControl>
                         <Input
-                          type="number"
-                          step="0.01"
+                          placeholder="Ex: Granola, Mel, Leite em pó"
                           {...field}
-                          onChange={(e) => field.onChange(parseFloat(e.target.value))}
-                          className="glass-effect border-white/20 bg-white/10 text-white placeholder:text-white/50"
+                          className="glass-effect border-white/20 bg-white/10 text-white placeholder:text-white/50 text-sm"
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-xs" />
                     </FormItem>
                   )}
                 />
 
                 <FormField
                   control={form.control}
-                  name="image"
+                  name="sizes"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-white">URL da Imagem</FormLabel>
+                      <FormLabel className="text-white text-sm">Tamanhos (separados por vírgula)</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="https://..."
+                          placeholder="Ex: Pequeno, Médio, Grande"
                           {...field}
-                          className="glass-effect border-white/20 bg-white/10 text-white placeholder:text-white/50"
+                          className="glass-effect border-white/20 bg-white/10 text-white placeholder:text-white/50 text-sm"
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-xs" />
                     </FormItem>
                   )}
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name="sizes"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white">Tamanhos (separados por vírgula)</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Pequeno, Médio, Grande"
-                        {...field}
-                        className="glass-effect border-white/20 bg-white/10 text-white placeholder:text-white/50"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="toppings"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white">Complementos (separados por vírgula)</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Granola, Mel, Leite em pó"
-                        {...field}
-                        className="glass-effect border-white/20 bg-white/10 text-white placeholder:text-white/50"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="flex gap-4">
+              <div className="flex gap-2 pt-4">
                 <Button
                   type="submit"
-                  className="bg-white text-black hover:bg-white/90 font-semibold"
+                  className="bg-white text-black hover:bg-white/90 font-semibold flex-1"
                   disabled={createMutation.isPending || updateMutation.isPending}
                 >
-                  {editingId ? "Atualizar Produto" : "Adicionar Produto"}
+                  {editingId ? "Atualizar" : "Adicionar"}
                 </Button>
                 {editingId && (
                   <Button
@@ -304,7 +321,7 @@ export default function Admin() {
                     variant="outline"
                     onClick={() => {
                       setEditingId(null);
-                      form.reset();
+                      form.reset({ categoryId: activeCategory });
                     }}
                     className="text-white border-white/20"
                   >
@@ -316,55 +333,73 @@ export default function Admin() {
           </Form>
         </Card>
 
-        {/* Lista de Produtos por Categoria */}
-        {categories.map((category) => (
-          <div key={category.id} className="mb-8">
-            <h3 className="text-2xl font-bold text-white mb-4">{category.name}</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {groupedProducts[category.id]?.map((product) => (
-                <Card
-                  key={product.id}
-                  className="bg-white/10 border-white/20 backdrop-blur-md p-4 hover:bg-white/15 transition"
-                >
-                  {product.image && (
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-32 object-cover rounded-md mb-3"
-                    />
-                  )}
-                  <h4 className="text-lg font-bold text-white mb-2">{product.name}</h4>
-                  {product.description && (
-                    <p className="text-sm text-white/70 mb-2">{product.description}</p>
-                  )}
-                  <div className="text-white font-semibold mb-3">
-                    R$ {product.basePrice.toFixed(2)}
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleEdit(product)}
-                      className="flex-1 text-white border-white/20"
-                    >
-                      <Edit2 className="w-4 h-4 mr-1" />
-                      Editar
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => deleteMutation.mutate(product.id)}
-                      className="flex-1"
-                    >
-                      <Trash2 className="w-4 h-4 mr-1" />
-                      Deletar
-                    </Button>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </div>
-        ))}
+        {/* Produtos por Categoria com Tabs */}
+        <Tabs value={activeCategory} onValueChange={setActiveCategory} className="w-full">
+          <TabsList className="grid w-full grid-cols-4 md:grid-cols-8 gap-1 bg-white/10 p-1">
+            {categories.map((cat) => (
+              <TabsTrigger 
+                key={cat.id} 
+                value={cat.id}
+                className="text-xs md:text-sm data-[state=active]:bg-white data-[state=active]:text-black text-white"
+              >
+                {cat.name.split(" ")[0]}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          {categories.map((category) => (
+            <TabsContent key={category.id} value={category.id} className="mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {categoryProducts.map((product) => (
+                  <Card
+                    key={product.id}
+                    className="bg-white/10 border-white/20 backdrop-blur-md p-4 hover:bg-white/15 transition flex flex-col"
+                  >
+                    {product.image && (
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full h-24 object-cover rounded-md mb-2"
+                      />
+                    )}
+                    <h4 className="font-bold text-white text-sm mb-1">{product.name}</h4>
+                    {product.description && (
+                      <p className="text-xs text-white/70 mb-2 line-clamp-2">{product.description}</p>
+                    )}
+                    <div className="text-white font-semibold text-sm mb-3">
+                      R$ {product.basePrice.toFixed(2)}
+                    </div>
+                    <div className="flex gap-2 mt-auto">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleEdit(product)}
+                        className="flex-1 text-white border-white/20 h-8 text-xs"
+                      >
+                        <Edit2 className="w-3 h-3 mr-1" />
+                        Editar
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => deleteMutation.mutate(product.id)}
+                        className="flex-1 h-8 text-xs"
+                      >
+                        <Trash2 className="w-3 h-3 mr-1" />
+                        Deletar
+                      </Button>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+              {categoryProducts.length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-white/60">Nenhum produto nesta categoria</p>
+                </div>
+              )}
+            </TabsContent>
+          ))}
+        </Tabs>
       </div>
     </div>
   );

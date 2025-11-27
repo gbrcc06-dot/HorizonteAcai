@@ -1,7 +1,8 @@
-import { Search, ShoppingCart } from "lucide-react";
+import { Search, ShoppingCart, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "wouter";
 import logoUrl from "@assets/Horizonte - Sorvete-Photoroom_1764204704473.png";
 
 interface StoreHeaderProps {
@@ -45,6 +46,17 @@ export function StoreHeader({ cartItemCount, searchQuery, onSearchChange, onCart
                 Loja Aberta • 11:00 às 22:54
               </Badge>
             </div>
+
+            <Link href="/admin">
+              <Button
+                className="bg-white text-black hover:bg-white/90"
+                size="icon"
+                title="Painel Admin"
+                data-testid="button-admin"
+              >
+                <Settings className="h-5 w-5" />
+              </Button>
+            </Link>
 
             <Button
               onClick={onCartClick}
