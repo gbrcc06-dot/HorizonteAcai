@@ -1,37 +1,62 @@
-import { type User, type InsertUser } from "@shared/schema";
+import { type Category, type Product, type CartItem, type InsertCartItem } from "@shared/schema";
+import { categories as initialCategories, products as initialProducts } from "./data/products";
 import { randomUUID } from "crypto";
 
-// modify the interface with any CRUD methods
-// you might need
-
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  getCategories(): Promise<Category[]>;
+  getProducts(): Promise<Product[]>;
+  getProductById(id: string): Promise<Product | undefined>;
+  getProductsByCategory(categoryId: string): Promise<Product[]>;
+  getCartItems(): Promise<CartItem[]>;
+  addCartItem(item: InsertCartItem): Promise<CartItem>;
+  removeCartItem(id: string): Promise<void>;
+  clearCart(): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<string, User>;
+  private categories: Category[];
+  private products: Product[];
+  private cartItems: Map<string, CartItem>;
 
   constructor() {
-    this.users = new Map();
+    this.categories = initialCategories;
+    this.products = initialProducts;
+    this.cartItems = new Map();
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getCategories(): Promise<Category[]> {
+    return this.categories.sort((a, b) => a.order - b.order);
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+  async getProducts(): Promise<Product[]> {
+    return this.products;
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
+  async getProductById(id: string): Promise<Product | undefined> {
+    return this.products.find(p => p.id === id);
+  }
+
+  async getProductsByCategory(categoryId: string): Promise<Product[]> {
+    return this.products.filter(p => p.categoryId === categoryId);
+  }
+
+  async getCartItems(): Promise<CartItem[]> {
+    return Array.from(this.cartItems.values());
+  }
+
+  async addCartItem(insertItem: InsertCartItem): Promise<CartItem> {
     const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+    const cartItem: CartItem = { ...insertItem, id };
+    this.cartItems.set(id, cartItem);
+    return cartItem;
+  }
+
+  async removeCartItem(id: string): Promise<void> {
+    this.cartItems.delete(id);
+  }
+
+  async clearCart(): Promise<void> {
+    this.cartItems.clear();
   }
 }
 
