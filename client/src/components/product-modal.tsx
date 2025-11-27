@@ -62,23 +62,61 @@ export function ProductModal({ product, open, onClose, onAddToCart }: ProductMod
     ? availableSizes.find(s => s.value === selectedSize)?.price || product.basePrice
     : product.basePrice;
 
+  // Verificar se é AÇAÍ com PURO selecionado
+  const acompanhamentoGroup = toppingGroups.find(g => g.id === "acompanhamento");
+  const isPuro = acompanhamentoGroup && (selectedToppingsByGroup["acompanhamento"] || []).includes("PURO");
+  
+  // Verificar se é AÇAÍ com COMPLETO selecionado
+  const isCompleto = acompanhamentoGroup && (selectedToppingsByGroup["acompanhamento"] || []).includes("COMPLETO");
+
+  // Se COMPLETO, marcar automaticamente os itens
+  const efectiveSelections = { ...selectedToppingsByGroup };
+  if (isCompleto) {
+    efectiveSelections["frutas"] = ["BANANA"];
+    efectiveSelections["coberturas"] = ["COBERTURA DE AÇAÍ", "COBERTURA DE BANANA"];
+  }
+
   // Calcular custo adicional dos complementos pagos
   let toppingsCost = 0;
-  Object.values(selectedToppingsByGroup).forEach(selectedItems => {
-    selectedItems.forEach(itemName => {
-      toppingGroups.forEach(group => {
-        const item = group.items.find(i => i.name === itemName);
-        if (item && item.price) {
-          toppingsCost += item.price;
-        }
+  let coberturasCount = 0;
+
+  Object.entries(efectiveSelections).forEach(([groupId, selectedItems]) => {
+    if (groupId === "coberturas") {
+      coberturasCount = selectedItems.length;
+      selectedItems.forEach((itemName, index) => {
+        toppingGroups.forEach(group => {
+          if (group.id === groupId) {
+            const item = group.items.find(i => i.name === itemName);
+            if (item) {
+              // Primeira cobertura é grátis, adicional custa R$2
+              if (index > 0) {
+                toppingsCost += 2;
+              } else if (item.price) {
+                // Se a primeira cobertura tem preço (não é açaí nem banana)
+                toppingsCost += item.price;
+              }
+            }
+          }
+        });
       });
-    });
+    } else {
+      selectedItems.forEach(itemName => {
+        toppingGroups.forEach(group => {
+          if (group.id === groupId) {
+            const item = group.items.find(i => i.name === itemName);
+            if (item && item.price) {
+              toppingsCost += item.price;
+            }
+          }
+        });
+      });
+    }
   });
 
   const totalPrice = (currentPrice + toppingsCost) * quantity;
 
   const handleAddToCart = () => {
-    const allToppings = Object.values(selectedToppingsByGroup).flat();
+    const allToppings = Object.values(efectiveSelections).flat();
     const finalPrice = currentPrice + toppingsCost;
     onAddToCart(product, selectedSize, allToppings, quantity, finalPrice);
     handleClose();
@@ -92,6 +130,32 @@ export function ProductModal({ product, open, onClose, onAddToCart }: ProductMod
   };
 
   const toggleTopping = (groupId: string, toppingName: string) => {
+    // Se é PURO, não permitir selecionar nada fora do acompanhamento
+    if (isPuro && groupId !== "acompanhamento") {
+      return;
+    }
+
+    // Se está deseleccionando PURO ou COMPLETO
+    if ((groupId === "acompanhamento" && toppingName === "PURO") ||
+        (groupId === "acompanhamento" && toppingName === "COMPLETO")) {
+      setSelectedToppingsByGroup(prev => {
+        const groupToppings = prev[groupId] || [];
+        if (groupToppings.includes(toppingName)) {
+          return {
+            ...prev,
+            [groupId]: groupToppings.filter(t => t !== toppingName),
+          };
+        } else {
+          // Limpar acompanhamento anterior
+          return {
+            ...prev,
+            [groupId]: [toppingName],
+          };
+        }
+      });
+      return;
+    }
+
     setSelectedToppingsByGroup(prev => {
       const groupToppings = prev[groupId] || [];
       const group = toppingGroups.find(g => g.id === groupId);
@@ -161,11 +225,11 @@ export function ProductModal({ product, open, onClose, onAddToCart }: ProductMod
                       <p className="text-xs text-white/60">{group.description}</p>
                     </div>
                     <Badge className="bg-white/10 text-white">
-                      {(selectedToppingsByGroup[group.id] || []).length}/{group.maxSelections}
+                      {(efectiveSelections[group.id] || []).length}/{group.maxSelections}
                     </Badge>
                   </div>
 
-                  {group.required && (selectedToppingsByGroup[group.id] || []).length === 0 && (
+                  {group.required && (efectiveSelections[group.id] || []).length === 0 && (
                     <div className="mb-3 p-2 rounded bg-red-500/20 border border-red-500/50">
                       <p className="text-xs text-red-300">Obrigatório selecionar pelo menos 1 item</p>
                     </div>
@@ -173,10 +237,14 @@ export function ProductModal({ product, open, onClose, onAddToCart }: ProductMod
 
                   <div className="space-y-2">
                     {group.items.map((item) => {
-                      const isSelected = (selectedToppingsByGroup[group.id] || []).includes(item.name);
+                      const isSelected = (efectiveSelections[group.id] || []).includes(item.name);
+                      const groupToppings = selectedToppingsByGroup[group.id] || [];
                       const isDisabled = 
                         !isSelected && 
-                        (selectedToppingsByGroup[group.id] || []).length >= group.maxSelections;
+                        groupToppings.length >= group.maxSelections;
+                      
+                      // Desabilitar se é PURO
+                      const isPuroDisabled = isPuro && group.id !== "acompanhamento";
 
                       return (
                         <div
@@ -184,19 +252,19 @@ export function ProductModal({ product, open, onClose, onAddToCart }: ProductMod
                           className={`flex items-center justify-between rounded-md p-3 cursor-pointer border-2 transition-all ${
                             isSelected
                               ? 'border-accent bg-accent/20'
-                              : isDisabled
+                              : (isPuroDisabled || isDisabled)
                               ? 'border-white/10 bg-white/5 opacity-50 cursor-not-allowed'
                               : 'border-white/20 bg-white/5 hover:bg-white/10'
                           }`}
-                          onClick={() => !isDisabled && toggleTopping(group.id, item.name)}
+                          onClick={() => !isPuroDisabled && !isDisabled && toggleTopping(group.id, item.name)}
                           data-testid={`checkbox-topping-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
                         >
                           <div className="flex items-center space-x-2 flex-1">
                             <Checkbox
                               id={`${group.id}-${item.name}`}
                               checked={isSelected}
-                              onCheckedChange={() => !isDisabled && toggleTopping(group.id, item.name)}
-                              disabled={isDisabled}
+                              onCheckedChange={() => !isPuroDisabled && !isDisabled && toggleTopping(group.id, item.name)}
+                              disabled={isPuroDisabled || isDisabled}
                             />
                             <Label
                               htmlFor={`${group.id}-${item.name}`}
@@ -205,7 +273,7 @@ export function ProductModal({ product, open, onClose, onAddToCart }: ProductMod
                               {item.name}
                             </Label>
                           </div>
-                          {item.price && (
+                          {item.price && !isSelected && (
                             <span className="text-sm text-accent font-semibold ml-2">
                               +{formatPrice(item.price)}
                             </span>

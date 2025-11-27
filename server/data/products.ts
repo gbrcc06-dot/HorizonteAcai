@@ -51,7 +51,7 @@ const SORVETE_GROUPS: ToppingGroup[] = [
   },
 ];
 
-// Grupos de complementos para AÇAÍ
+// Grupos de complementos para AÇAÍ com regras especiais
 const ACAI_GROUPS: ToppingGroup[] = [
   {
     id: "opcoes",
@@ -118,12 +118,12 @@ const ACAI_GROUPS: ToppingGroup[] = [
     items: [
       { name: "COBERTURA DE AÇAÍ" },
       { name: "COBERTURA DE BANANA" },
-      { name: "COBERTURA DE CHOCOLATE" },
-      { name: "COBERTURA DE LIMÃO" },
-      { name: "COBERTURA DE MENTA" },
-      { name: "COBERTURA DE MORANGO" },
-      { name: "COBERTURA DE TUTTI FRUTTI" },
-      { name: "MEL" },
+      { name: "COBERTURA DE CHOCOLATE", price: 5 },
+      { name: "COBERTURA DE LIMÃO", price: 5 },
+      { name: "COBERTURA DE MENTA", price: 5 },
+      { name: "COBERTURA DE MORANGO", price: 5 },
+      { name: "COBERTURA DE TUTTI FRUTTI", price: 5 },
+      { name: "MEL", price: 5 },
     ],
   },
 ];
