@@ -9,9 +9,7 @@
     "resolveJsonModule": true,
     "strict": true,
     "noEmit": false,
-    
-    "skipLibCheck": true,  <-- ADICIONE OU CONFIRME ESTA LINHA
-    
+    "skipLibCheck": true,
     "baseUrl": "..",
     "paths": {
       "@shared/*": ["shared/*"]
