@@ -11,11 +11,11 @@ export function StoreFooter() {
             <div className="space-y-3 text-sm text-white/80">
               <div className="flex items-center gap-2">
                 <Phone className="h-4 w-4 text-accent" />
-                <span>(XX) XXXXX-XXXX</span>
+                <span>(65) 98104-1149</span>
               </div>
               <div className="flex items-center gap-2">
                 <SiWhatsapp className="h-4 w-4 text-accent" />
-                <span>(XX) XXXXX-XXXX</span>
+                <a href="https://wa.me/5565981041149" className="hover:text-accent transition-colors">(65) 98104-1149</a>
               </div>
               <div className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 text-accent mt-0.5" />
@@ -55,7 +55,7 @@ export function StoreFooter() {
                 <Facebook className="h-5 w-5" />
               </a>
               <a
-                href="#"
+                href="https://wa.me/5565981041149"
                 className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-all hover-elevate"
                 aria-label="WhatsApp"
                 data-testid="link-whatsapp"

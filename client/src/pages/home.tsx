@@ -122,7 +122,7 @@ export default function Home() {
     
     const fullMessage = `*Pedido Horizonte - Sorvete e Açaí*\n\n${message}\n\n---\nSubtotal: R$ ${subtotal.toFixed(2)}\nTaxa de entrega: R$ ${deliveryFee.toFixed(2)}\n*Total: R$ ${total.toFixed(2)}*`;
     
-    const whatsappUrl = `https://wa.me/5500000000000?text=${encodeURIComponent(fullMessage)}`;
+    const whatsappUrl = `https://wa.me/5565981041149?text=${encodeURIComponent(fullMessage)}`;
     window.open(whatsappUrl, '_blank');
   };
 
