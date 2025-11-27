@@ -110,27 +110,27 @@ export default function Home() {
   const handleCheckout = (checkoutData: any) => {
     const message = cartItems.map(item => {
       const toppings = item.selectedToppings && item.selectedToppings.length > 0
-        ? `\n  Acompanhamentos: ${item.selectedToppings.join(', ')}`
+        ? `\nAcompanhamentos: ${item.selectedToppings.join(', ')}`
         : '';
       
-      return `✅ ${item.quantity}x ${item.productName}${item.size ? ` (${item.size})` : ''}${toppings} - R$ ${(item.price * item.quantity).toFixed(2)}`;
+      return `• ${item.quantity}x ${item.productName}${item.size ? ` (${item.size})` : ''}${toppings} - R$ ${(item.price * item.quantity).toFixed(2)}`;
     }).join('\n\n');
     
     const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const deliveryFee = 5;
     const total = subtotal + deliveryFee;
 
-    const addressInfo = `🛒 *PEDIDO:*\n${message}\n\n📍 *ENDERECO DE ENTREGA:*\n👤 ${checkoutData.name}\n${checkoutData.rua}, ${checkoutData.numero}${checkoutData.quadra ? ` - Quadra ${checkoutData.quadra}` : ''}${checkoutData.complemento ? ` - ${checkoutData.complemento}` : ''}\nCEP: ${checkoutData.cep}`;
+    const addressInfo = `*PEDIDO RECEBIDO*\n${message}\n\n*ENDERECO DE ENTREGA:*\n${checkoutData.name}\n${checkoutData.rua}, ${checkoutData.numero}${checkoutData.quadra ? ` - Quadra ${checkoutData.quadra}` : ''}${checkoutData.complemento ? ` - ${checkoutData.complemento}` : ''}\nCEP: ${checkoutData.cep}`;
 
-    let paymentInfo = `💳 *FORMA DE PAGAMENTO:* ${
+    let paymentInfo = `*FORMA DE PAGAMENTO:* ${
       checkoutData.paymentMethod === 'pix' ? 'PIX' :
       checkoutData.paymentMethod === 'cartao' ? 'CARTAO' :
-      '💸 DINHEIRO'
+      'DINHEIRO'
     }`;
 
     if (checkoutData.paymentMethod === 'dinheiro' && checkoutData.needsChange) {
       const changeValue = checkoutData.changeAmount - total;
-      paymentInfo += `\n💸 *Sera pago:* R$ ${checkoutData.changeAmount.toFixed(2)}\n💸 *Troco:* R$ ${changeValue.toFixed(2)}`;
+      paymentInfo += `\n*Sera pago:* R$ ${checkoutData.changeAmount.toFixed(2)}\n*Troco:* R$ ${changeValue.toFixed(2)}`;
     }
     
     const fullMessage = `${addressInfo}\n\n${paymentInfo}\n\nSubtotal: R$ ${subtotal.toFixed(2)}\nTaxa de entrega: R$ ${deliveryFee.toFixed(2)}\n\n*TOTAL: R$ ${total.toFixed(2)}*`;
