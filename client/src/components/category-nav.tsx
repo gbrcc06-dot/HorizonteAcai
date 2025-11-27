@@ -9,7 +9,7 @@ interface CategoryNavProps {
 
 export function CategoryNav({ categories, activeCategory, onCategoryClick }: CategoryNavProps) {
   return (
-    <div className="sticky top-[270px] z-40 border-b border-white/10 glass-effect">
+    <div className="sticky top-[160px] z-40 border-b border-white/10 glass-effect">
       <ScrollArea className="w-full">
         <div className="flex gap-2 p-2">
           {categories.map((category) => (
