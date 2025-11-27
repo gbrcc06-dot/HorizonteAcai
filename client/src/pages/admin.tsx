@@ -27,6 +27,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import { Trash2, Edit2, Plus, Home } from "lucide-react";
 import { useState } from "react";
 import { Link } from "wouter";
@@ -272,24 +273,6 @@ export default function Admin() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="toppings"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white text-sm">Complementos (separados por vírgula)</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Ex: Granola, Mel, Leite em pó"
-                          {...field}
-                          className="glass-effect border-white/20 bg-white/10 text-white placeholder:text-white/50 text-sm"
-                        />
-                      </FormControl>
-                      <FormMessage className="text-xs" />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
                   name="sizes"
                   render={({ field }) => (
                     <FormItem>
@@ -306,6 +289,24 @@ export default function Admin() {
                   )}
                 />
               </div>
+
+              <FormField
+                control={form.control}
+                name="toppingGroups"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white text-sm">Complementos (JSON - Deixe em branco para simples, ou cole JSON)</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder='Exemplo: [{"id":"sabor","title":"SABOR","description":"Escolha 1","maxSelections":1,"required":true,"items":[{"name":"CHOCOLATE"},{"name":"MORANGO"}]}]'
+                        {...field}
+                        className="glass-effect border-white/20 bg-white/10 text-white placeholder:text-white/50 text-sm min-h-20 font-mono text-xs"
+                      />
+                    </FormControl>
+                    <FormMessage className="text-xs" />
+                  </FormItem>
+                )}
+              />
 
               <div className="flex gap-2 pt-4">
                 <Button
