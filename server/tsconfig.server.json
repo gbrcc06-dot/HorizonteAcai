@@ -8,6 +8,8 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "strict": true,
+
+    "skipLibCheck": true,
     "noEmit": false
   },
   "include": ["./**/*", "../shared/**/*"],
