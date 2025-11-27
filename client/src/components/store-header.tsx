@@ -47,16 +47,16 @@ export function StoreHeader({ cartItemCount, searchQuery, onSearchChange, onCart
               </Badge>
             </div>
 
-            <Link href="/admin">
+            {/* Admin button - only visible as a link, auth checked on admin page */}
+            <a href="/admin" title="Painel Admin">
               <Button
                 className="bg-white text-black hover:bg-white/90"
                 size="icon"
-                title="Painel Admin"
                 data-testid="button-admin"
               >
                 <Settings className="h-5 w-5" />
               </Button>
-            </Link>
+            </a>
 
             <Button
               onClick={onCartClick}

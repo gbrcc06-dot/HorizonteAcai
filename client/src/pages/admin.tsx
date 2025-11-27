@@ -28,9 +28,11 @@ import {
 } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Trash2, Edit2, Plus, Home } from "lucide-react";
+import { Trash2, Edit2, Plus, Home, LogOut } from "lucide-react";
 import { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
+import { AdminLogin } from "@/components/admin-login";
+import { useAdminAuth } from "@/hooks/use-admin-auth";
 import type { Category, Product } from "@/shared/schema";
 
 const productSchema = z.object({
@@ -49,8 +51,22 @@ const productSchema = z.object({
 type ProductFormData = z.infer<typeof productSchema>;
 
 export default function Admin() {
+  const { isAuthenticated, isLoading, login, logout } = useAdminAuth();
+  const [location, setLocation] = useLocation();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState("promocao");
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen gradient-bg flex items-center justify-center">
+        <div className="text-white text-lg">Carregando...</div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <AdminLogin onLogin={login} />;
+  }
 
   const { data: categories = [] } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
@@ -150,12 +166,25 @@ export default function Admin() {
         {/* Header com botão voltar */}
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold text-white">Painel Admin</h1>
-          <Link href="/">
-            <Button className="bg-white text-black hover:bg-white/90">
-              <Home className="w-4 h-4 mr-2" />
-              Voltar à Loja
+          <div className="flex gap-2">
+            <Link href="/">
+              <Button className="bg-white text-black hover:bg-white/90">
+                <Home className="w-4 h-4 mr-2" />
+                Voltar à Loja
+              </Button>
+            </Link>
+            <Button 
+              onClick={() => {
+                logout();
+                setLocation("/");
+              }}
+              variant="outline"
+              className="text-white border-white/20 hover:bg-white/10"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Sair
             </Button>
-          </Link>
+          </div>
         </div>
 
         {/* Formulário Rápido */}
