@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapPin } from "lucide-react";
+import { MapPin, Copy } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -29,6 +29,7 @@ interface CheckoutFormProps {
 
 export function CheckoutForm({ total, onSubmit }: CheckoutFormProps) {
   const [loadingLocation, setLoadingLocation] = useState(false);
+  const [gpsLink, setGpsLink] = useState<string>("");
 
   const form = useForm<CheckoutData>({
     resolver: zodResolver(checkoutSchema),
@@ -57,10 +58,10 @@ export function CheckoutForm({ total, onSubmit }: CheckoutFormProps) {
           
           form.setValue("latitude", lat);
           form.setValue("longitude", lng);
-          form.setValue("rua", `Localização (GPS): ${mapsLink}`);
+          setGpsLink(mapsLink);
           
           setLoadingLocation(false);
-          alert("Localização capturada!\nLink Google Maps adicionado ao endereço.");
+          alert("Localização capturada com sucesso!");
         },
         (error) => {
           setLoadingLocation(false);
@@ -99,6 +100,21 @@ export function CheckoutForm({ total, onSubmit }: CheckoutFormProps) {
             <MapPin className="mr-2 h-4 w-4" />
             {loadingLocation ? "Buscando localização..." : "Usar minha localização"}
           </Button>
+
+          {gpsLink && (
+            <div className="bg-white/10 border border-white/20 rounded-md p-3 space-y-2">
+              <p className="text-white text-sm font-semibold">Localização (GPS):</p>
+              <a
+                href={gpsLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-300 hover:text-blue-200 text-sm break-all underline"
+                data-testid="link-gps-maps"
+              >
+                {gpsLink}
+              </a>
+            </div>
+          )}
 
           <div className="space-y-4">
             <FormField
