@@ -134,77 +134,93 @@ export function ProductModal({ product, open, onClose, onAddToCart }: ProductMod
             </div>
           )}
 
-          {freeToppings.length > 0 && (
-            <div>
-              <h3 className="mb-1 font-semibold text-lg">Acompanhamentos GRÁTIS</h3>
-              <p className="text-sm text-white/70 mb-4">
-                Escolha até 5 itens • Acima disso: R$ 2,00 cada
-              </p>
-              {selectedFreeToppings.length > 5 && (
-                <Badge className="mb-3 bg-accent/90">
-                  +{extraFreeToppings} item(s) adicionais: R$ {extraFreeToppingsCost.toFixed(2)}
-                </Badge>
-              )}
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {freeToppings.map((topping) => (
-                  <div
-                    key={topping}
-                    className="flex items-center space-x-2 rounded-md border border-border p-3 hover-elevate cursor-pointer"
-                    onClick={() => toggleFreeTopping(topping)}
-                    data-testid={`checkbox-topping-free-${topping.toLowerCase().replace(/\s+/g, '-')}`}
-                  >
-                    <Checkbox
-                      id={topping}
-                      checked={selectedFreeToppings.includes(topping)}
-                      onCheckedChange={() => toggleFreeTopping(topping)}
-                    />
-                    <Label
-                      htmlFor={topping}
-                      className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-white"
-                    >
-                      {topping}
-                    </Label>
+          {(freeToppings.length > 0 || paidToppings.length > 0) && (
+            <div className="border-t border-white/10 pt-4">
+              <h3 className="mb-4 font-bold text-xl">Personalize seu pedido</h3>
+              
+              {freeToppings.length > 0 && (
+                <div className="mb-6 p-4 rounded-lg bg-green-500/10 border border-green-500/30">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="font-semibold text-lg text-green-400">✓ Até 5 GRÁTIS</h4>
+                    <p className="text-sm text-white/70">+ de 5: R$ 2,00 cada</p>
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
+                  {selectedFreeToppings.length > 5 && (
+                    <div className="mb-3 p-2 rounded bg-accent/20 border border-accent/50">
+                      <p className="text-sm text-accent font-medium">
+                        +{extraFreeToppings} item(s) adicionais = R$ {extraFreeToppingsCost.toFixed(2)}
+                      </p>
+                    </div>
+                  )}
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    {freeToppings.map((topping) => (
+                      <div
+                        key={topping}
+                        className={`flex items-center space-x-2 rounded-md p-3 cursor-pointer border-2 transition-all ${
+                          selectedFreeToppings.includes(topping)
+                            ? 'border-green-400 bg-green-500/20'
+                            : 'border-green-500/30 bg-green-500/5 hover:bg-green-500/10'
+                        }`}
+                        onClick={() => toggleFreeTopping(topping)}
+                        data-testid={`checkbox-topping-free-${topping.toLowerCase().replace(/\s+/g, '-')}`}
+                      >
+                        <Checkbox
+                          id={topping}
+                          checked={selectedFreeToppings.includes(topping)}
+                          onCheckedChange={() => toggleFreeTopping(topping)}
+                        />
+                        <Label
+                          htmlFor={topping}
+                          className="cursor-pointer text-sm font-medium text-white leading-tight"
+                        >
+                          {topping}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-          {paidToppings.length > 0 && (
-            <div>
-              <h3 className="mb-3 font-semibold text-lg flex items-center gap-2">
-                Acompanhamentos PAGOS
-                <Badge variant="secondary" className="shimmer text-white bg-accent/80">
-                  R$ 2,00 cada
-                </Badge>
-              </h3>
-              {selectedPaidToppings.length > 0 && (
-                <Badge className="mb-3 bg-accent/90">
-                  {selectedPaidToppings.length} item(s): R$ {selectedPaidCost.toFixed(2)}
-                </Badge>
-              )}
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {paidToppings.map((topping) => (
-                  <div
-                    key={topping}
-                    className="flex items-center space-x-2 rounded-md border border-accent/30 bg-accent/5 p-3 hover-elevate cursor-pointer"
-                    onClick={() => togglePaidTopping(topping)}
-                    data-testid={`checkbox-topping-paid-${topping.toLowerCase().replace(/\s+/g, '-')}`}
-                  >
-                    <Checkbox
-                      id={`paid-${topping}`}
-                      checked={selectedPaidToppings.includes(topping)}
-                      onCheckedChange={() => togglePaidTopping(topping)}
-                    />
-                    <Label
-                      htmlFor={`paid-${topping}`}
-                      className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-white"
-                    >
-                      {topping}
-                    </Label>
+              {paidToppings.length > 0 && (
+                <div className="p-4 rounded-lg bg-purple-500/10 border border-purple-500/30">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="font-semibold text-lg text-purple-300">✨ Acompanhamentos PREMIUM</h4>
+                    <p className="text-sm text-white/70 font-bold">R$ 2,00 cada</p>
                   </div>
-                ))}
-              </div>
+                  {selectedPaidToppings.length > 0 && (
+                    <div className="mb-3 p-2 rounded bg-accent/20 border border-accent/50">
+                      <p className="text-sm text-accent font-medium">
+                        {selectedPaidToppings.length} item(s) = R$ {selectedPaidCost.toFixed(2)}
+                      </p>
+                    </div>
+                  )}
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    {paidToppings.map((topping) => (
+                      <div
+                        key={topping}
+                        className={`flex items-center space-x-2 rounded-md p-3 cursor-pointer border-2 transition-all ${
+                          selectedPaidToppings.includes(topping)
+                            ? 'border-purple-300 bg-purple-500/20'
+                            : 'border-purple-500/30 bg-purple-500/5 hover:bg-purple-500/10'
+                        }`}
+                        onClick={() => togglePaidTopping(topping)}
+                        data-testid={`checkbox-topping-paid-${topping.toLowerCase().replace(/\s+/g, '-')}`}
+                      >
+                        <Checkbox
+                          id={`paid-${topping}`}
+                          checked={selectedPaidToppings.includes(topping)}
+                          onCheckedChange={() => togglePaidTopping(topping)}
+                        />
+                        <Label
+                          htmlFor={`paid-${topping}`}
+                          className="cursor-pointer text-sm font-medium text-white leading-tight"
+                        >
+                          {topping}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

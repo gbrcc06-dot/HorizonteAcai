@@ -16,18 +16,18 @@ export function StoreHeader({ cartItemCount, searchQuery, onSearchChange, onCart
     <header className="sticky top-0 z-50 border-b border-white/10 glass-effect">
       <div className="container mx-auto px-4 py-4">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
             <img 
               src={logoUrl} 
               alt="Horizonte - Sorvete e Açaí" 
-              className="h-24 w-auto md:h-32"
+              className="h-40 w-auto md:h-56"
               data-testid="img-logo"
             />
-            <div className="flex flex-col">
-              <h1 className="text-2xl font-bold text-white md:text-3xl">
+            <div className="flex flex-col hidden md:flex">
+              <h1 className="text-3xl font-bold text-white md:text-4xl">
                 Horizonte
               </h1>
-              <p className="text-sm text-white/90">Sorvete e Açaí</p>
+              <p className="text-base text-white/90">Sorvete e Açaí</p>
             </div>
           </div>
 
