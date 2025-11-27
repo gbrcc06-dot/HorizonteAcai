@@ -51,13 +51,18 @@ export function CheckoutForm({ total, onSubmit }: CheckoutFormProps) {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          form.setValue("latitude", position.coords.latitude);
-          form.setValue("longitude", position.coords.longitude);
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          if (form.setValue) {
+            form.setValue("latitude", lat);
+            form.setValue("longitude", lng);
+          }
           setLoadingLocation(false);
+          alert(`Localização atualizada: ${lat.toFixed(4)}, ${lng.toFixed(4)}`);
         },
-        () => {
-          alert("Não conseguimos acessar sua localização");
+        (error) => {
           setLoadingLocation(false);
+          alert("Não conseguimos acessar sua localização. Verifique as permissões.");
         }
       );
     } else {

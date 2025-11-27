@@ -113,16 +113,16 @@ export default function Home() {
         ? `\nAcompanhamentos: ${item.selectedToppings.join(', ')}`
         : '';
       
-      return `• ${item.quantity}x ${item.productName}${item.size ? ` (${item.size})` : ''}${toppings} - R$ ${(item.price * item.quantity).toFixed(2)}`;
+      return `[x] ${item.quantity}x ${item.productName}${item.size ? ` (${item.size})` : ''}${toppings} - R$ ${(item.price * item.quantity).toFixed(2)}`;
     }).join('\n\n');
     
     const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const deliveryFee = 5;
     const total = subtotal + deliveryFee;
 
-    const addressInfo = `*PEDIDO RECEBIDO*\n${message}\n\n*ENDERECO DE ENTREGA:*\n${checkoutData.name}\n${checkoutData.rua}, ${checkoutData.numero}${checkoutData.quadra ? ` - Quadra ${checkoutData.quadra}` : ''}${checkoutData.complemento ? ` - ${checkoutData.complemento}` : ''}\nCEP: ${checkoutData.cep}`;
+    const addressInfo = `[PEDIDO] RECEBIDO\n${message}\n\n[ENDERECO] DE ENTREGA\n${checkoutData.name}\n${checkoutData.rua}, ${checkoutData.numero}${checkoutData.quadra ? ` - Quadra ${checkoutData.quadra}` : ''}${checkoutData.complemento ? ` - ${checkoutData.complemento}` : ''}\nCEP: ${checkoutData.cep}`;
 
-    let paymentInfo = `*FORMA DE PAGAMENTO:* ${
+    let paymentInfo = `[PAGAMENTO] FORMA: ${
       checkoutData.paymentMethod === 'pix' ? 'PIX' :
       checkoutData.paymentMethod === 'cartao' ? 'CARTAO' :
       'DINHEIRO'
@@ -130,10 +130,10 @@ export default function Home() {
 
     if (checkoutData.paymentMethod === 'dinheiro' && checkoutData.needsChange) {
       const changeValue = checkoutData.changeAmount - total;
-      paymentInfo += `\n*Sera pago:* R$ ${checkoutData.changeAmount.toFixed(2)}\n*Troco:* R$ ${changeValue.toFixed(2)}`;
+      paymentInfo += `\nSera pago: R$ ${checkoutData.changeAmount.toFixed(2)}\nTroco: R$ ${changeValue.toFixed(2)}`;
     }
     
-    const fullMessage = `${addressInfo}\n\n${paymentInfo}\n\nSubtotal: R$ ${subtotal.toFixed(2)}\nTaxa de entrega: R$ ${deliveryFee.toFixed(2)}\n\n*TOTAL: R$ ${total.toFixed(2)}*`;
+    const fullMessage = `${addressInfo}\n\n${paymentInfo}\n\nSubtotal: R$ ${subtotal.toFixed(2)}\nTaxa de entrega: R$ ${deliveryFee.toFixed(2)}\n\n===TOTAL: R$ ${total.toFixed(2)}===`;
     
     const whatsappUrl = `https://wa.me/5565981041149?text=${encodeURIComponent(fullMessage)}`;
     window.open(whatsappUrl, '_blank');
