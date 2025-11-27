@@ -8,9 +8,12 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "strict": true,
+    "noEmit": false,
 
-    "skipLibCheck": true,
-    "noEmit": false
+    "baseUrl": "..",
+    "paths": {
+      "@shared/*": ["shared/*"]
+    }
   },
   "include": ["./**/*", "../shared/**/*"],
   "exclude": ["../client", "../node_modules"]
