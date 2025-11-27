@@ -51,22 +51,11 @@ const productSchema = z.object({
 type ProductFormData = z.infer<typeof productSchema>;
 
 export default function Admin() {
+  // Hooks MUST be called in the same order every render
   const { isAuthenticated, isLoading, login, logout } = useAdminAuth();
   const [location, setLocation] = useLocation();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState("promocao");
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen gradient-bg flex items-center justify-center">
-        <div className="text-white text-lg">Carregando...</div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return <AdminLogin onLogin={login} />;
-  }
 
   const { data: categories = [] } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
@@ -133,6 +122,19 @@ export default function Admin() {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
     },
   });
+
+  // Now check authentication AFTER all hooks are called
+  if (isLoading) {
+    return (
+      <div className="min-h-screen gradient-bg flex items-center justify-center">
+        <div className="text-white text-lg">Carregando...</div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <AdminLogin onLogin={login} />;
+  }
 
   const categoryProducts = products.filter(p => p.categoryId === activeCategory);
 
