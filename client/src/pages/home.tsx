@@ -110,19 +110,19 @@ export default function Home() {
   const handleCheckout = (checkoutData: any) => {
     const message = cartItems.map(item => {
       const toppings = item.selectedToppings && item.selectedToppings.length > 0
-        ? `\nAcompanhamentos: ${item.selectedToppings.join(', ')}`
+        ? `\n  ➤ Acompanhamentos: ${item.selectedToppings.join(', ')}`
         : '';
       
-      return `${item.quantity}x ${item.productName}${item.size ? ` (${item.size})` : ''}${toppings} - R$ ${(item.price * item.quantity).toFixed(2)}`;
+      return `✓ ${item.quantity}x ${item.productName}${item.size ? ` (${item.size})` : ''}${toppings} - R$ ${(item.price * item.quantity).toFixed(2)}`;
     }).join('\n\n');
     
     const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const deliveryFee = 5;
     const total = subtotal + deliveryFee;
 
-    const addressInfo = `*ENDERECO DE ENTREGA:*\n${checkoutData.name}\n${checkoutData.rua}, ${checkoutData.numero}${checkoutData.quadra ? ` - Quadra ${checkoutData.quadra}` : ''}${checkoutData.complemento ? ` - ${checkoutData.complemento}` : ''}\nCEP: ${checkoutData.cep}`;
+    const addressInfo = `★ *ENDERECO DE ENTREGA:*\n👤 ${checkoutData.name}\n📍 ${checkoutData.rua}, ${checkoutData.numero}${checkoutData.quadra ? ` - Quadra ${checkoutData.quadra}` : ''}${checkoutData.complemento ? ` - ${checkoutData.complemento}` : ''}\n📮 CEP: ${checkoutData.cep}`;
 
-    let paymentInfo = `*FORMA DE PAGAMENTO:* ${
+    let paymentInfo = `★ *FORMA DE PAGAMENTO:* ${
       checkoutData.paymentMethod === 'pix' ? 'PIX' :
       checkoutData.paymentMethod === 'cartao' ? 'CARTAO' :
       'DINHEIRO'
@@ -130,10 +130,10 @@ export default function Home() {
 
     if (checkoutData.paymentMethod === 'dinheiro' && checkoutData.needsChange) {
       const changeValue = checkoutData.changeAmount - total;
-      paymentInfo += `\n*Sera pago:* R$ ${checkoutData.changeAmount.toFixed(2)}\n*Troco:* R$ ${changeValue.toFixed(2)}`;
+      paymentInfo += `\n💰 *Sera pago:* R$ ${checkoutData.changeAmount.toFixed(2)}\n💵 *Troco:* R$ ${changeValue.toFixed(2)}`;
     }
     
-    const fullMessage = `*PEDIDO HORIZONTE - SORVETE E ACAI*\n\n${message}\n\n${addressInfo}\n\n${paymentInfo}\n\n---\nSubtotal: R$ ${subtotal.toFixed(2)}\nTaxa de entrega: R$ ${deliveryFee.toFixed(2)}\n---\n*TOTAL: R$ ${total.toFixed(2)}*`;
+    const fullMessage = `★━━━━━━━━━━━━━━━━★\n*PEDIDO HORIZONTE*\n*SORVETE E ACAI*\n★━━━━━━━━━━━━━━━━★\n\n${message}\n\n${addressInfo}\n\n${paymentInfo}\n\n━━━━━━━━━━━━━━━━━\n📊 Subtotal: R$ ${subtotal.toFixed(2)}\n🚚 Taxa de entrega: R$ ${deliveryFee.toFixed(2)}\n━━━━━━━━━━━━━━━━━\n*TOTAL: R$ ${total.toFixed(2)}*`;
     
     const whatsappUrl = `https://wa.me/5565981041149?text=${encodeURIComponent(fullMessage)}`;
     window.open(whatsappUrl, '_blank');
