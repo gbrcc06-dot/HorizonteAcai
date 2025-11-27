@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { queryClient, apiRequest } from "@lib/queryClient";
+import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -21,9 +21,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import { Trash2, Edit2, Plus } from "lucide-react";
+import { Trash2, Edit2 } from "lucide-react";
 import { useState } from "react";
-import type { Category, Product } from "@shared/schema";
+import type { Category, Product } from "@/shared/schema";
 
 const productSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
