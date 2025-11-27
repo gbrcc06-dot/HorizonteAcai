@@ -120,7 +120,8 @@ export default function Home() {
     const deliveryFee = 5;
     const total = subtotal + deliveryFee;
 
-    const addressInfo = `[PEDIDO] RECEBIDO\n${message}\n\n[ENDERECO] DE ENTREGA\n${checkoutData.name}\n${checkoutData.rua}\n${checkoutData.numero}${checkoutData.quadra ? ` - Quadra ${checkoutData.quadra}` : ''}${checkoutData.complemento ? ` - ${checkoutData.complemento}` : ''}\nCEP: ${checkoutData.cep}`;
+    const gpsInfo = checkoutData.gpsLink ? `\nLocalização (GPS): ${checkoutData.gpsLink}` : '';
+    const addressInfo = `[PEDIDO] RECEBIDO\n${message}\n\n[ENDERECO] DE ENTREGA\n${checkoutData.name}\n${checkoutData.rua}\n${checkoutData.numero}${checkoutData.quadra ? ` - Quadra ${checkoutData.quadra}` : ''}${checkoutData.complemento ? ` - ${checkoutData.complemento}` : ''}\nCEP: ${checkoutData.cep}${gpsInfo}`;
 
     let paymentInfo = `[PAGAMENTO] FORMA: ${
       checkoutData.paymentMethod === 'pix' ? 'PIX' :

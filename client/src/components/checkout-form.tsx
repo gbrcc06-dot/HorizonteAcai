@@ -58,6 +58,7 @@ export function CheckoutForm({ total, onSubmit }: CheckoutFormProps) {
           
           form.setValue("latitude", lat);
           form.setValue("longitude", lng);
+          form.setValue("gpsLink", mapsLink);
           setGpsLink(mapsLink);
           
           setLoadingLocation(false);

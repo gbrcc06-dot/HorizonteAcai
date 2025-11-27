@@ -14,6 +14,7 @@ export const checkoutSchema = z.object({
   changeAmount: z.number().min(0).optional(),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
+  gpsLink: z.string().optional(),
 });
 
 export type CheckoutData = z.infer<typeof checkoutSchema>;
