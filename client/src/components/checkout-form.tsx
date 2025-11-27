@@ -93,10 +93,9 @@ export function CheckoutForm({ total, onSubmit }: CheckoutFormProps) {
           
           <Button
             type="button"
-            variant="outline"
             onClick={handleGetLocation}
             disabled={loadingLocation}
-            className="w-full"
+            className="w-full bg-white text-black hover:bg-white/90 font-semibold"
             data-testid="button-get-location"
           >
             <MapPin className="mr-2 h-4 w-4" />
