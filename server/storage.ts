@@ -65,12 +65,20 @@ export class MemStorage implements IStorage {
     return Array.from(this.cartItems.values());
   }
 
-  async addCartItem(insertItem: InsertCartItem): Promise<CartItem> {
-    const id = randomUUID();
-    const cartItem: CartItem = { ...insertItem, id };
-    this.cartItems.set(id, cartItem);
-    return cartItem;
-  }
+ // Linhas 69-74 corrigidas
+async addCartItem(insertItem: InsertCartItem): Promise<CartItem> {
+  const id = randomUUID();
+  const cartItem: CartItem = { 
+    ...insertItem, 
+    id,
+    // Coalesce (une) valores 'undefined' para valores seguros, resolvendo o erro TS2322.
+    size: insertItem.size ?? null, 
+    quantity: insertItem.quantity ?? 1,
+    selectedToppings: insertItem.selectedToppings ?? null,
+  }; 
+  this.cartItems.set(id, cartItem);
+  return cartItem;
+}
 
   async removeCartItem(id: string): Promise<void> {
     this.cartItems.delete(id);
