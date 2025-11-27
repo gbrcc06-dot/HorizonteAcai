@@ -107,7 +107,7 @@ export default function Home() {
     });
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = (checkoutData: any) => {
     const message = cartItems.map(item => {
       const toppings = item.selectedToppings && item.selectedToppings.length > 0
         ? `\nAcompanhamentos: ${item.selectedToppings.join(', ')}`
@@ -119,8 +119,21 @@ export default function Home() {
     const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const deliveryFee = 5;
     const total = subtotal + deliveryFee;
+
+    const addressInfo = `*Endereço de Entrega:*\n${checkoutData.name}\n${checkoutData.rua}, ${checkoutData.numero}${checkoutData.quadra ? ` - Quadra ${checkoutData.quadra}` : ''}${checkoutData.complemento ? ` - ${checkoutData.complemento}` : ''}\nCEP: ${checkoutData.cep}`;
+
+    let paymentInfo = `*Forma de Pagamento:* ${
+      checkoutData.paymentMethod === 'pix' ? 'PIX' :
+      checkoutData.paymentMethod === 'cartao' ? 'Cartão' :
+      'Dinheiro'
+    }`;
+
+    if (checkoutData.paymentMethod === 'dinheiro' && checkoutData.needsChange) {
+      const changeValue = checkoutData.changeAmount - total;
+      paymentInfo += `\n*Será pago:* R$ ${checkoutData.changeAmount.toFixed(2)}\n*Troco:* R$ ${changeValue.toFixed(2)}`;
+    }
     
-    const fullMessage = `*Pedido Horizonte - Sorvete e Açaí*\n\n${message}\n\n---\nSubtotal: R$ ${subtotal.toFixed(2)}\nTaxa de entrega: R$ ${deliveryFee.toFixed(2)}\n*Total: R$ ${total.toFixed(2)}*`;
+    const fullMessage = `*Pedido Horizonte - Sorvete e Açaí*\n\n${message}\n\n${addressInfo}\n\n${paymentInfo}\n\n---\nSubtotal: R$ ${subtotal.toFixed(2)}\nTaxa de entrega: R$ ${deliveryFee.toFixed(2)}\n*Total: R$ ${total.toFixed(2)}*`;
     
     const whatsappUrl = `https://wa.me/5565981041149?text=${encodeURIComponent(fullMessage)}`;
     window.open(whatsappUrl, '_blank');

@@ -1,4 +1,5 @@
-import { Trash2, ShoppingBag, X } from "lucide-react";
+import { useState } from "react";
+import { Trash2, ShoppingBag, X, ChevronLeft } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -11,17 +12,21 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { CheckoutForm } from "@/components/checkout-form";
 import type { CartItem } from "@shared/schema";
+import type { CheckoutData } from "@shared/checkout-schema";
 
 interface CartDrawerProps {
   open: boolean;
   onClose: () => void;
   items: CartItem[];
   onRemoveItem: (itemId: string) => void;
-  onCheckout: () => void;
+  onCheckout: (checkoutData: CheckoutData) => void;
 }
 
 export function CartDrawer({ open, onClose, items, onRemoveItem, onCheckout }: CartDrawerProps) {
+  const [showCheckout, setShowCheckout] = useState(false);
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -32,6 +37,11 @@ export function CartDrawer({ open, onClose, items, onRemoveItem, onCheckout }: C
   const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const deliveryFee = subtotal > 0 ? 5 : 0;
   const total = subtotal + deliveryFee;
+
+  const handleCheckoutSubmit = (checkoutData: CheckoutData) => {
+    onCheckout(checkoutData);
+    setShowCheckout(false);
+  };
 
   return (
     <Sheet open={open} onOpenChange={onClose}>
@@ -59,6 +69,49 @@ export function CartDrawer({ open, onClose, items, onRemoveItem, onCheckout }: C
               Continuar comprando
             </Button>
           </div>
+        ) : showCheckout ? (
+          <>
+            <SheetHeader className="p-6 pb-4 border-b border-border">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowCheckout(false)}
+                className="absolute left-4 top-6"
+                data-testid="button-back-to-cart"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </Button>
+              <SheetTitle className="text-2xl font-bold text-gradient">
+                Entrega e Pagamento
+              </SheetTitle>
+            </SheetHeader>
+
+            <ScrollArea className="flex-1 px-6">
+              <div className="py-6">
+                <CheckoutForm
+                  total={total}
+                  onSubmit={handleCheckoutSubmit}
+                />
+              </div>
+            </ScrollArea>
+
+            <SheetFooter className="border-t border-border p-6 space-y-2">
+              <div className="flex justify-between text-sm mb-4">
+                <span className="text-muted-foreground">Total</span>
+                <span className="text-lg font-bold text-accent">{formatPrice(total)}</span>
+              </div>
+              <Button
+                onClick={() => {
+                  const form = document.querySelector('form') as HTMLFormElement;
+                  if (form) form.dispatchEvent(new Event('submit', { bubbles: true }));
+                }}
+                className="w-full glow-effect-strong text-lg font-bold py-6"
+                data-testid="button-checkout-final"
+              >
+                Finalizar Pedido no WhatsApp
+              </Button>
+            </SheetFooter>
+          </>
         ) : (
           <>
             <ScrollArea className="flex-1 px-6">
@@ -130,11 +183,11 @@ export function CartDrawer({ open, onClose, items, onRemoveItem, onCheckout }: C
               </div>
 
               <Button
-                onClick={onCheckout}
+                onClick={() => setShowCheckout(true)}
                 className="w-full glow-effect-strong text-lg font-bold py-6"
                 data-testid="button-checkout"
               >
-                Finalizar pedido no WhatsApp
+                Ir para Entrega
               </Button>
             </div>
           </>
