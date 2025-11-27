@@ -21,15 +21,18 @@ interface ProductModalProps {
   onAddToCart: (product: Product, size: string | null, toppings: string[], quantity: number, price: number) => void;
 }
 
-const DEFAULT_TOPPINGS = [
+const FREE_TOPPINGS = [
   "Leite condensado",
   "Leite em pó",
-  "Nutella",
   "Granola",
-  "Paçoca",
-  "Amendoim",
   "Banana",
   "Morango",
+];
+
+const PAID_TOPPINGS = [
+  "Nutella",
+  "Paçoca",
+  "Amendoim",
   "Kiwi",
   "Manga",
   "Uva",
@@ -57,7 +60,8 @@ const DEFAULT_SIZES: ProductSize[] = [
 
 export function ProductModal({ product, open, onClose, onAddToCart }: ProductModalProps) {
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [selectedToppings, setSelectedToppings] = useState<string[]>([]);
+  const [selectedFreeToppings, setSelectedFreeToppings] = useState<string[]>([]);
+  const [selectedPaidToppings, setSelectedPaidToppings] = useState<string[]>([]);
   const [quantity, setQuantity] = useState(1);
 
   const formatPrice = (price: number) => {
@@ -74,29 +78,43 @@ export function ProductModal({ product, open, onClose, onAddToCart }: ProductMod
     ? DEFAULT_SIZES.filter(s => product.sizes?.includes(s.value))
     : [];
   
-  const availableToppings = product.toppings && product.toppings.length > 0 
-    ? product.toppings 
-    : DEFAULT_TOPPINGS;
-  
   const currentPrice = hasSizes && selectedSize 
     ? availableSizes.find(s => s.value === selectedSize)?.price || product.basePrice
     : product.basePrice;
-  const totalPrice = currentPrice * quantity;
+  
+  // Calcular custo adicional de complementos
+  const extraFreeToppings = Math.max(0, selectedFreeToppings.length - 5);
+  const extraFreeToppingsCost = extraFreeToppings * 2;
+  const paidToppingsCost = selectedPaidToppings.length * 2;
+  const toppingsCost = extraFreeToppingsCost + paidToppingsCost;
+  
+  const totalPrice = (currentPrice + toppingsCost) * quantity;
 
   const handleAddToCart = () => {
-    onAddToCart(product, selectedSize, selectedToppings, quantity, currentPrice);
+    const allToppings = [...selectedFreeToppings, ...selectedPaidToppings];
+    const finalPrice = currentPrice + toppingsCost;
+    onAddToCart(product, selectedSize, allToppings, quantity, finalPrice);
     handleClose();
   };
 
   const handleClose = () => {
     setSelectedSize(null);
-    setSelectedToppings([]);
+    setSelectedFreeToppings([]);
+    setSelectedPaidToppings([]);
     setQuantity(1);
     onClose();
   };
 
-  const toggleTopping = (topping: string) => {
-    setSelectedToppings(prev =>
+  const toggleFreeTopping = (topping: string) => {
+    setSelectedFreeToppings(prev =>
+      prev.includes(topping)
+        ? prev.filter(t => t !== topping)
+        : [...prev, topping]
+    );
+  };
+
+  const togglePaidTopping = (topping: string) => {
+    setSelectedPaidToppings(prev =>
       prev.includes(topping)
         ? prev.filter(t => t !== topping)
         : [...prev, topping]
@@ -141,31 +159,67 @@ export function ProductModal({ product, open, onClose, onAddToCart }: ProductMod
           )}
 
           <div>
-            <h3 className="mb-3 font-semibold text-lg flex items-center gap-2">
-              Acompanhamentos GRÁTIS
-              <Badge variant="secondary" className="shimmer">
-                +{availableToppings.length} opções
-              </Badge>
-            </h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Escolha quantos quiser!
+            <h3 className="mb-1 font-semibold text-lg">Acompanhamentos GRÁTIS</h3>
+            <p className="text-sm text-white/70 mb-4">
+              Escolha até 5 itens • Acima disso: R$ 2,00 cada
             </p>
+            {selectedFreeToppings.length > 5 && (
+              <Badge className="mb-3 bg-accent/90">
+                +{extraFreeToppings} item(s) adicionais: R$ {extraFreeToppingsCost.toFixed(2)}
+              </Badge>
+            )}
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {availableToppings.map((topping) => (
+              {FREE_TOPPINGS.map((topping) => (
                 <div
                   key={topping}
                   className="flex items-center space-x-2 rounded-md border border-border p-3 hover-elevate cursor-pointer"
-                  onClick={() => toggleTopping(topping)}
-                  data-testid={`checkbox-topping-${topping.toLowerCase().replace(/\s+/g, '-')}`}
+                  onClick={() => toggleFreeTopping(topping)}
+                  data-testid={`checkbox-topping-free-${topping.toLowerCase().replace(/\s+/g, '-')}`}
                 >
                   <Checkbox
                     id={topping}
-                    checked={selectedToppings.includes(topping)}
-                    onCheckedChange={() => toggleTopping(topping)}
+                    checked={selectedFreeToppings.includes(topping)}
+                    onCheckedChange={() => toggleFreeTopping(topping)}
                   />
                   <Label
                     htmlFor={topping}
-                    className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-white"
+                  >
+                    {topping}
+                  </Label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="mb-3 font-semibold text-lg flex items-center gap-2">
+              Acompanhamentos PAGOS
+              <Badge variant="secondary" className="shimmer text-white bg-accent/80">
+                R$ 2,00 cada
+              </Badge>
+            </h3>
+            {selectedPaidToppings.length > 0 && (
+              <Badge className="mb-3 bg-accent/90">
+                {selectedPaidToppings.length} item(s): R$ {paidToppingsCost.toFixed(2)}
+              </Badge>
+            )}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {PAID_TOPPINGS.map((topping) => (
+                <div
+                  key={topping}
+                  className="flex items-center space-x-2 rounded-md border border-accent/30 bg-accent/5 p-3 hover-elevate cursor-pointer"
+                  onClick={() => togglePaidTopping(topping)}
+                  data-testid={`checkbox-topping-paid-${topping.toLowerCase().replace(/\s+/g, '-')}`}
+                >
+                  <Checkbox
+                    id={`paid-${topping}`}
+                    checked={selectedPaidToppings.includes(topping)}
+                    onCheckedChange={() => togglePaidTopping(topping)}
+                  />
+                  <Label
+                    htmlFor={`paid-${topping}`}
+                    className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-white"
                   >
                     {topping}
                   </Label>
