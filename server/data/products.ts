@@ -170,6 +170,7 @@ export const products: Product[] = [
     categoryId: "promocao",
     basePrice: 23.0,
     isPromotion: true,
+    isFeatured: false, // <-- Adicionado
     image: "/attached_assets/stock_images/creamy_strawberry_mi_dc8d6735.jpg",
     sizes: [],
     toppings: [],
@@ -182,6 +183,7 @@ export const products: Product[] = [
     categoryId: "promocao",
     basePrice: 55.0,
     isPromotion: true,
+    isFeatured: false, // <-- Adicionado
     image: "/attached_assets/stock_images/premium_acai_bowl_wi_a5185792.jpg",
     sizes: [],
     toppings: [],
@@ -193,6 +195,8 @@ export const products: Product[] = [
     description: "Todos os acompanhamentos vão dentro do copo.",
     categoryId: "copos",
     basePrice: 11.0,
+    isPromotion: false, // <-- Adicionado
+    isFeatured: false, // <-- Adicionado
     image: "/attached_assets/stock_images/premium_acai_bowl_wi_4c7697cb.jpg",
     sizes: ["200ml"],
     toppings: [],
@@ -204,6 +208,8 @@ export const products: Product[] = [
     description: "Todos os acompanhamentos vão dentro do copo.",
     categoryId: "copos",
     basePrice: 14.0,
+    isPromotion: false, // <-- Adicionado
+    isFeatured: false, // <-- Adicionado
     image: "/attached_assets/stock_images/premium_acai_bowl_wi_e61cd6ef.jpg",
     sizes: ["300ml"],
     toppings: [],
@@ -215,6 +221,8 @@ export const products: Product[] = [
     description: "Todos os acompanhamentos vão dentro do copo.",
     categoryId: "copos",
     basePrice: 17.0,
+    isPromotion: false, // <-- Adicionado
+    isFeatured: false, // <-- Adicionado
     image: "/attached_assets/stock_images/premium_acai_bowl_wi_a5185792.jpg",
     sizes: ["400ml"],
     toppings: [],
@@ -226,6 +234,8 @@ export const products: Product[] = [
     description: "Todos os acompanhamentos vão dentro do copo.",
     categoryId: "copos",
     basePrice: 20.0,
+    isPromotion: false, // <-- Adicionado
+    isFeatured: false, // <-- Adicionado
     image: "/attached_assets/stock_images/premium_acai_bowl_wi_4c7697cb.jpg",
     sizes: ["500ml"],
     toppings: [],
@@ -237,6 +247,8 @@ export const products: Product[] = [
     description: "Todos os acompanhamentos vão dentro do pote.",
     categoryId: "potes",
     basePrice: 35.0,
+    isPromotion: false, // <-- Adicionado
+    isFeatured: false, // <-- Adicionado
     image: "/attached_assets/stock_images/premium_acai_bowl_wi_e61cd6ef.jpg",
     sizes: [],
     toppings: [],
@@ -248,6 +260,8 @@ export const products: Product[] = [
     description: "Delicioso milk-shake cremoso",
     categoryId: "milk-shake",
     basePrice: 12.0,
+    isPromotion: false, // <-- Adicionado
+    isFeatured: false, // <-- Adicionado
     image: "/attached_assets/stock_images/creamy_strawberry_mi_aeaecbc8.jpg",
     sizes: [],
     toppings: [],
@@ -259,6 +273,8 @@ export const products: Product[] = [
     description: "Sorvete de frutas delicioso",
     categoryId: "sorvete",
     basePrice: 11.0,
+    isPromotion: false, // <-- Adicionado
+    isFeatured: false, // <-- Adicionado
     image: "/attached_assets/stock_images/delicious_ice_cream__50a88f13.jpg",
     sizes: [],
     toppings: [],
@@ -270,6 +286,7 @@ export const products: Product[] = [
     description: "O MELHOR SORVETE D'OURO",
     categoryId: "sorvete",
     basePrice: 19.0,
+    isPromotion: false, // <-- Adicionado (Você tinha apenas isFeatured: true)
     isFeatured: true,
     image: "/attached_assets/stock_images/delicious_ice_cream__d25da88f.jpg",
     sizes: [],
@@ -282,6 +299,8 @@ export const products: Product[] = [
     description: "AÇAÍ + NUTELLA + PRESTÍGIO",
     categoryId: "trufados",
     basePrice: 22.0,
+    isPromotion: false, // <-- Adicionado
+    isFeatured: false, // <-- Adicionado
     image: "/attached_assets/stock_images/premium_acai_bowl_wi_a5185792.jpg",
     sizes: [],
     toppings: [],
@@ -293,6 +312,8 @@ export const products: Product[] = [
     description: "Barca de açaí para compartilhar",
     categoryId: "barca",
     basePrice: 25.0,
+    isPromotion: false, // <-- Adicionado
+    isFeatured: false, // <-- Adicionado
     image: "/attached_assets/stock_images/premium_acai_bowl_wi_e61cd6ef.jpg",
     sizes: [],
     toppings: [],
