@@ -20,7 +20,7 @@ export function StoreHeader({ cartItemCount, searchQuery, onSearchChange, onCart
             <img 
               src={logoUrl} 
               alt="Horizonte - Sorvete e Açaí" 
-              className="h-40 w-auto md:h-56"
+              className="h-80 w-auto md:h-[448px]"
               data-testid="img-logo"
             />
             <div className="flex flex-col hidden md:flex">
