@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../dist/server",
+    "moduleResolution": "Node",
+    "target": "ES2020",
+    "module": "ESNext",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "noEmit": false
+  },
+  "include": ["./**/*", "../shared/**/*"],
+  "exclude": ["../client", "../node_modules"]
+}
