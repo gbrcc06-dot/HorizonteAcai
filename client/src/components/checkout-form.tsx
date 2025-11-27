@@ -50,33 +50,17 @@ export function CheckoutForm({ total, onSubmit }: CheckoutFormProps) {
     setLoadingLocation(true);
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
-        async (position) => {
+        (position) => {
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
+          const mapsLink = `https://www.google.com/maps?q=${lat},${lng}`;
           
-          try {
-            const response = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
-            );
-            const data = await response.json();
-            
-            const address = data.address || {};
-            const rua = address.road || address.street || "";
-            const numero = address.house_number || "";
-            const cep = address.postcode || "";
-            
-            form.setValue("rua", rua);
-            form.setValue("numero", numero);
-            form.setValue("cep", cep);
-            form.setValue("latitude", lat);
-            form.setValue("longitude", lng);
-            
-            setLoadingLocation(false);
-            alert("Endereço preenchido automaticamente!");
-          } catch (error) {
-            setLoadingLocation(false);
-            alert("Erro ao buscar endereço. Tente preencher manualmente.");
-          }
+          form.setValue("latitude", lat);
+          form.setValue("longitude", lng);
+          form.setValue("rua", `Localização (GPS): ${mapsLink}`);
+          
+          setLoadingLocation(false);
+          alert("Localização capturada!\nLink Google Maps adicionado ao endereço.");
         },
         (error) => {
           setLoadingLocation(false);
