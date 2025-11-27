@@ -14,27 +14,27 @@ interface StoreHeaderProps {
 export function StoreHeader({ cartItemCount, searchQuery, onSearchChange, onCartClick }: StoreHeaderProps) {
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 glass-effect">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-6">
+      <div className="container mx-auto px-4 py-2">
+        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-3">
             <img 
               src={logoUrl} 
               alt="Horizonte - Sorvete e Açaí" 
-              className="h-80 w-auto md:h-[448px]"
+              className="h-16 w-auto md:h-20"
               data-testid="img-logo"
             />
             <div className="flex flex-col hidden md:flex">
-              <h1 className="text-3xl font-bold text-white md:text-4xl">
+              <h1 className="text-lg font-bold text-white md:text-xl">
                 Horizonte
               </h1>
-              <p className="text-base text-white/90">Sorvete e Açaí</p>
+              <p className="text-xs text-white/90">Sorvete e Açaí</p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
             <Badge 
               variant="default" 
-              className="bg-green-500/90 text-white backdrop-blur-sm"
+              className="bg-green-500/90 text-white backdrop-blur-sm text-xs"
               data-testid="badge-store-status"
             >
               <div className="mr-1.5 h-2 w-2 rounded-full bg-white animate-pulse" />
@@ -43,7 +43,7 @@ export function StoreHeader({ cartItemCount, searchQuery, onSearchChange, onCart
           </div>
         </div>
 
-        <div className="mt-4 flex items-center gap-3">
+        <div className="mt-2 flex items-center gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60" />
             <Input
