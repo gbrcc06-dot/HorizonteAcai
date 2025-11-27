@@ -93,5 +93,42 @@ export async function registerRoutes(
     }
   });
 
+  // Admin routes
+  app.post("/api/admin/products", async (req, res) => {
+    try {
+      const product = await storage.addProduct(req.body);
+      res.status(201).json(product);
+    } catch (error) {
+      console.error("Error adding product:", error);
+      res.status(400).json({ error: "Invalid product data" });
+    }
+  });
+
+  app.put("/api/admin/products/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const product = await storage.updateProduct(id, req.body);
+      if (!product) {
+        res.status(404).json({ error: "Product not found" });
+        return;
+      }
+      res.json(product);
+    } catch (error) {
+      console.error("Error updating product:", error);
+      res.status(400).json({ error: "Invalid product data" });
+    }
+  });
+
+  app.delete("/api/admin/products/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteProduct(id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      res.status(500).json({ error: "Failed to delete product" });
+    }
+  });
+
   return httpServer;
 }

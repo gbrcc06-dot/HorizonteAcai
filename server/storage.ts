@@ -7,6 +7,9 @@ export interface IStorage {
   getProducts(): Promise<Product[]>;
   getProductById(id: string): Promise<Product | undefined>;
   getProductsByCategory(categoryId: string): Promise<Product[]>;
+  addProduct(product: Omit<Product, 'id'>): Promise<Product>;
+  updateProduct(id: string, product: Partial<Product>): Promise<Product | undefined>;
+  deleteProduct(id: string): Promise<void>;
   getCartItems(): Promise<CartItem[]>;
   addCartItem(item: InsertCartItem): Promise<CartItem>;
   removeCartItem(id: string): Promise<void>;
@@ -38,6 +41,24 @@ export class MemStorage implements IStorage {
 
   async getProductsByCategory(categoryId: string): Promise<Product[]> {
     return this.products.filter(p => p.categoryId === categoryId);
+  }
+
+  async addProduct(product: Omit<Product, 'id'>): Promise<Product> {
+    const id = randomUUID();
+    const newProduct: Product = { ...product, id } as Product;
+    this.products.push(newProduct);
+    return newProduct;
+  }
+
+  async updateProduct(id: string, updates: Partial<Product>): Promise<Product | undefined> {
+    const index = this.products.findIndex(p => p.id === id);
+    if (index === -1) return undefined;
+    this.products[index] = { ...this.products[index], ...updates };
+    return this.products[index];
+  }
+
+  async deleteProduct(id: string): Promise<void> {
+    this.products = this.products.filter(p => p.id !== id);
   }
 
   async getCartItems(): Promise<CartItem[]> {
