@@ -50,15 +50,33 @@ export function CheckoutForm({ total, onSubmit }: CheckoutFormProps) {
     setLoadingLocation(true);
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        async (position) => {
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
-          if (form.setValue) {
+          
+          try {
+            const response = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+            );
+            const data = await response.json();
+            
+            const address = data.address || {};
+            const rua = address.road || address.street || "";
+            const numero = address.house_number || "";
+            const cep = address.postcode || "";
+            
+            form.setValue("rua", rua);
+            form.setValue("numero", numero);
+            form.setValue("cep", cep);
             form.setValue("latitude", lat);
             form.setValue("longitude", lng);
+            
+            setLoadingLocation(false);
+            alert("Endereço preenchido automaticamente!");
+          } catch (error) {
+            setLoadingLocation(false);
+            alert("Erro ao buscar endereço. Tente preencher manualmente.");
           }
-          setLoadingLocation(false);
-          alert(`Localização atualizada: ${lat.toFixed(4)}, ${lng.toFixed(4)}`);
         },
         (error) => {
           setLoadingLocation(false);
